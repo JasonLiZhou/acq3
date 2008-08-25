@@ -58,7 +58,7 @@ end;
 
 
 status = struct ('measure', 'gain', 'unit', 'scaled_unit');
-for i = devlist % for each device, get the information
+for i = fliplr(devlist) % for each device, get the information
     fprintf(MC700BConnection, 'getPrimarySignalInfo(%d)\n', i-1);
     mc700msg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700msg);

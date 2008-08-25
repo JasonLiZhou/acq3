@@ -36,7 +36,8 @@ if(nargin == 0) % when called with no command, build the window or update it wit
    
    h = findobj('Tag', 'PEdit');
    if(isempty(h))
-      open('pulse_editor.fig');
+      %open('pulse_editor.fig');
+      pulse_editor_fig(); % call our m-routine instead of guide
       h = findobj('Tag', 'PEdit');
       set(h, 'menubar', 'none');
       set(h, 'toolbar', 'none');
@@ -122,7 +123,14 @@ else
       if(olddur2 ~= STIM2.Duration.v(2))
          stim_pv;
       end;
-      
+     case 'scale'
+      hcmd = findobj('Tag', 'PEdit_scale');
+      oldscale = STIM2.Scale.v;
+      scale = get(hcmd, 'string');
+      STIM2.Scale.v = str2num(scale);
+      if(oldscale ~= STIM2.Scale.v)
+         stim_pv;
+      end;    
       
    case {'level', 'l1l2'}
       hcmd = findobj('Tag', 'PEdit_level');
