@@ -77,6 +77,9 @@ if(isempty(sfile.waveform) || sfile.update == 0) % stimulus needs an update - ge
         QueMessage('PV: Stimulus generation error');
         return;
     end;
+    if(size(time_base, 1) ~= size(outdata, 1))
+        outdata = outdata';
+    end;
     if(size(time_base) ~= size(outdata))
         QueMessage('PV: Sizes of stim and time_base not matching?'); % this really should not occur
         return;
