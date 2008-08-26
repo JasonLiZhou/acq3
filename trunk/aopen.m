@@ -6,7 +6,7 @@ function aopen(filename)
 
 % Usage
 %     If no filename is given, the next available filename using the default
-%     structure is used, e.g., 01jan01a.mat. 
+%     structure is used, e.g., 01jan01a.mat.
 %     If a filename is given, then that is used instead of the default.
 
 %
@@ -14,7 +14,7 @@ function aopen(filename)
 % Paul B. Manis
 % pmanis@med.unc.edu
 %
-% Open a file for acquisition. 
+% Open a file for acquisition.
 % file naming is automatic (DATAC naming convention).
 % This routine opens the file, requests information for the header block
 % (comment, user, etc), then writes the first entry to the file (header block)
@@ -32,58 +32,58 @@ acq_stop;
 
 % first make sure we are not already in a file
 if(~isempty(ACQ_FILENAME))
-   answer = lower(questdlg(sprintf('File %s already open. Close ?', ACQ_FILENAME),...
-      'Previous file close','Yes','No','Help','No'));
-   %   ans = lower(inputdlg (sprintf('File %s already open. Close (y,n, [n])?', ACQ_FILENAME), 'Previous file', 1, {'n'}));
-   if(isempty(answer))
-      answer = 'y';
-   end;
-   if(strmatch(lower(answer), {'y', 'yes'}))
-      ac; % call the file close routine.
-   else
-      QueMessage('File not closed; continuing', 1);
-      h = findobj('Tag', 'DispFilename');
-      if(isempty(h))
-         fprintf(2, 'aopen: Unable to display filename');
-         return;
-      end;
-      set(h, 'String', ACQ_FILENAME);
-h = findobj('Tag', 'Acq');
-if(ishandle(h))
-   set(h, 'Name', sprintf('ACQ: Data Acquisition [%s] - File: %s', ...
-      CONFIG.Config.v, ACQ_FILENAME));
-end;
-      disp_rec;
-      return;
-   end;
+    answer = lower(questdlg(sprintf('File %s already open. Close ?', ACQ_FILENAME),...
+        'Previous file close','Yes','No','Help','No'));
+    %   ans = lower(inputdlg (sprintf('File %s already open. Close (y,n, [n])?', ACQ_FILENAME), 'Previous file', 1, {'n'}));
+    if(isempty(answer))
+        answer = 'y';
+    end;
+    if(strmatch(lower(answer), {'y', 'yes'}))
+        ac; % call the file close routine.
+    else
+        QueMessage('File not closed; continuing', 1);
+        h = findobj('Tag', 'DispFilename');
+        if(isempty(h))
+            fprintf(2, 'aopen: Unable to display filename');
+            return;
+        end;
+        set(h, 'String', ACQ_FILENAME);
+        h = findobj('Tag', 'Acq');
+        if(ishandle(h))
+            set(h, 'Name', sprintf('ACQ: Data Acquisition [%s] - File: %s', ...
+                CONFIG.Config.v, ACQ_FILENAME));
+        end;
+        disp_rec;
+        return;
+    end;
 end;
 
 % ok, now we can open a file. First see if there's a name on the command line
 if(nargin > 0) % we will try to use the name on the command line
-   fullname = fullfile(ACQ_PATH, filename);   
-   if(exist(fullname, 'file')) % a file by this name already exists - no option to overwrite
-      fprintf(2, 'aopen.m ERROR - file %s exists - choose another filename\n', fullname);
-      ACQ_FILENAME = [];
-   else
-      create_file(fullname, []);
-   end;
+    fullname = fullfile(ACQ_PATH, filename);
+    if(exist(fullname, 'file')) % a file by this name already exists - no option to overwrite
+        fprintf(2, 'aopen.m ERROR - file %s exists - choose another filename\n', fullname);
+        ACQ_FILENAME = [];
+    else
+        create_file(fullname, []);
+    end;
 else % no name on the command line - find the latest filename in the series
-   [filename, hf] = nextname(ACQ_PATH); % find the next name
-   if(isempty(filename)) % its an error? bad path or something. Error listed by nextname
-      ACQ_FILENAME = [];
-   else
-      fullname = fullfile(ACQ_PATH, filename);
-      create_file(fullname, hf);
-   end;
+    [filename, hf] = nextname(ACQ_PATH); % find the next name
+    if(isempty(filename)) % its an error? bad path or something. Error listed by nextname
+        ACQ_FILENAME = [];
+    else
+        fullname = fullfile(ACQ_PATH, filename);
+        create_file(fullname, hf);
+    end;
 end;
-return; 
+return;
 
 % --------------------------
 function create_file(filename, hf)
 % function to create the file.
 % we fill in some fields in the HFILE structure (header)
 % we also ask via dialog for some general information regarding the
-% experiment; to be filled in by the user. This should 
+% experiment; to be filled in by the user. This should
 % adequately describe the experiment.
 % We then write this header to the file, and create the index file.
 % if hf is not empty, or missing, we will assume its a header type
@@ -103,24 +103,47 @@ HFILE.ext = ext;
 HFILE.Version = ACQVERSION;
 %HFILE.path = [BASEPATH pa];
 HFILE.path = pa;
+if(~isempty(hf))
+    HFILE.Experiment = hf.Experiment.v;
+    HFILE.Species = hf.Species.v;
+    HFILE.Age = hf.Age.v;
+    HFILE.Weight = hf.Weight.v;
+    HFILE.Sex = hf.Sex.v;
+    HFILE.DIV = hf.DIV.v;
+    HFILE.Signature = hf.Signature.v;
+else
+    HFILE.Experiment = '';
+    HFILE.Species = '';
+    HFILE.Sex = '';
+    HFILE.Age = '';
+    HFILE.Weight = '';
+    HFILE.DIV = '';
+    HFILE.Signature = '';
+end;
+
+
 % generate the fields to fill in
 prompt   = {'Experiment','Species', 'Age', 'Sex', 'Weight', 'Days In Vitro', 'Signatures'};
 title    = sprintf('File_%s', fp);
 lines = [10,80; 1,40; 1,20; 1,20; 1,20; 1,20; 1,60];
 if(nargin > 1 && ~isempty(hf))
-   def = {char(hf.Experiment.v), char(hf.Species.v), char(hf.Age.v), char(hf.Sex.v), ...
-         char(hf.Weight.v), char(hf.DIV.v), char(hf.Signature.v)};
+  def = {char(hf.Experiment.v), char(hf.Species.v), char(hf.Age.v), char(hf.Sex.v), ...
+        char(hf.Weight.v), char(hf.DIV.v), char(hf.Signature.v)};
 else
-   def     = {'','Rattus','10', 'U', '26', '1', CONFIG.Owner.v};
+  def     = {'','Rattus','10', 'U', '26', '1', CONFIG.Owner.v};
 end;
-options.Resize='off';
+options.Resize='on';
 options.WindowStyle='normal';
 options.Interpreter='tex';
+
 answer   = inputdlg(prompt, title, lines, def, options);
+
+% header;
+
 if(isempty(answer)) % we canceled out of the dialog...
-   fprintf(2, 'aopen ERROR: File not opened...\n');
-   ACQ_FILENAME = [];
-   return;
+    fprintf(2, 'aopen ERROR: File not opened...\n');
+    ACQ_FILENAME = [];
+    return;
 end;
 HFILE.Experiment.v = answer(1,:);
 HFILE.Species.v = answer(2,:);
@@ -146,14 +169,14 @@ index_file('new', 'HFILE');
 
 h = findobj('Tag', 'DispFilename');
 if(isempty(h))
-   fprintf(2, 'aopen ERROR: Unable to display filename');
-   return;
+    fprintf(2, 'aopen ERROR: Unable to display filename');
+    return;
 end;
 set(h, 'String', ACQ_FILENAME);
 h = findobj('Tag', 'Acq');
 if(ishandle(h))
-   set(h, 'Name', sprintf('ACQ: Data Acquisition [%s] - File: %s', ...
-      CONFIG.Config.v, ACQ_FILENAME));
+    set(h, 'Name', sprintf('ACQ: Data Acquisition [%s] - File: %s', ...
+        CONFIG.Config.v, ACQ_FILENAME));
 end;
 disp_rec;
 
@@ -175,33 +198,33 @@ function [fo, hf] = nextname(acq_path)
 global HFILE
 
 fo = [];
-hf = []; % header information 
+hf = []; % header information
 if(nargin ~= 1)
-   fprintf(2, 'aopen ERROR: nextname.m requires path argument\n');
-   return;
+    fprintf(2, 'aopen ERROR: nextname.m requires path argument\n');
+    return;
 end;
 dn = date;
 base = lower([dn(1:2) dn(4:6) dn(10:11)]); % base name
 lettera = 97; % base letter is 97 decimal, corresponding to ascii 'a' (lowercase)
 for i = 0:25 % only the letters
-   fn = [base char(lettera+i) '.mat'];
-   ft = fullfile(acq_path, fn); % make full filename
-   if(~exist(ft, 'file')) % file does not exist, so make it
-      fo = fn;
-      if(i > 0)
-         hfn = [base char(lettera+i-1) '.mat']; % get the header hfile from the previous file in series
-         hft = fullfile(acq_path, hfn); % we use this information to initialize the initial header information
-         if(~exist(hft, 'file')) % no file, 
+    fn = [base char(lettera+i) '.mat'];
+    ft = fullfile(acq_path, fn); % make full filename
+    if(~exist(ft, 'file')) % file does not exist, so make it
+        fo = fn;
+        if(i > 0)
+            hfn = [base char(lettera+i-1) '.mat']; % get the header hfile from the previous file in series
+            hft = fullfile(acq_path, hfn); % we use this information to initialize the initial header information
+            if(~exist(hft, 'file')) % no file,
+                return;
+            end;
+            load(hft, 'HFILE'); % load the header
+            hf = HFILE; % and return it
             return;
-         end;
-         load(hft, 'HFILE'); % load the header
-         hf = HFILE; % and return it
-         return;
-      else
-         return; % i is 0, 'a' file, just do it
-      end;
-      
-   end;
+        else
+            return; % i is 0, 'a' file, just do it
+        end;
+
+    end;
 end;
 QueMessage('nextfile.m is out of file names for this date\n');
 fprintf(2, 'aopen.m ERROR: nextfile.m is out of file names for this date\n');
