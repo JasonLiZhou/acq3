@@ -164,7 +164,7 @@ h0 = figure('name', 'ACQ: Data Acquisition', ...
     'WindowButtonUpFcn', 'acq3(''mouse_up'', gcbf);', ...
     'Tag','Acq');
 set(h0, 'Units', 'characters');
-%set(gcf,'Renderer','OpenGL')
+set(gcf,'Renderer','OpenGL');
 figsz=get(h0, 'Position');
 
 button_x = 1; % figsz(3) - but_width-but_hpad;  % place the buttons to the left side of the display
