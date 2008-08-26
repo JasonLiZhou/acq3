@@ -133,9 +133,9 @@ for n = 1 : length(pulse_begin) % for each pulse in the train
     for i=1:length(sfile.Duration.v) % each pulse consists of a series of steps, so create steps
         j2 = floor(sfile.Duration.v(i)/(nrate/1000)); % Number of points in the duration step dur in msec; convert rate to msec too
         if(relflag && i > 1) % check relative
-           lev(j1:j1+j2-1)  = sfile.Level.v(1)*sfile.Level.v(i); % value is constant for that time
+           lev(j1:j1+j2-2)  = sfile.Level.v(1)*sfile.Level.v(i); % value is constant for that time
         else
-           lev(j1:j1+j2-1) = sfile.Level.v(i);
+           lev(j1:j1+j2-2) = sfile.Level.v(i);
         end;
         j1 = j2 + 1;
     end;

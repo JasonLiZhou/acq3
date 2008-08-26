@@ -199,7 +199,7 @@ if(flag == 0) % only when we have to...
     update_current_field(curr_s, pointer, fmt); % fix up the display
     this = eval(curr_s);
     if(isfield(this, 'Calculate')) % make sure a field exists for this first
-        cmdr = eval([curr_s '.Calculate;']);
+        cmdr = eval([curr_s '.calculate;']);
         eval(cmdr);
     end;
 

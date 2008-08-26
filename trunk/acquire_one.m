@@ -552,6 +552,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                     QueMessage('Acquire_one: Stopping, unable to read amp status');
                     return; % whoops....
                 end;
+                % AmpStatus.Gain=[tmode.gain];
             end;
             if(~SCOPE_FLAG)
                 disp_rec;

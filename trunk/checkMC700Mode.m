@@ -1,4 +1,4 @@
-function t = checkMC700Mode()
+function [t,gain] = checkMC700Mode()
 
 global MC700BConnection
 
@@ -34,8 +34,9 @@ if(debugflag)
         fprintf(1, 'device: %d\n', devlist(i));
     end;
 end;
+gain = [1,1];
 
-for i = devlist % for each device, get the information
+for i = fliplr(devlist) % for each device, get the information
 
     fprintf(MC700BConnection,  'getMode(%d)\n', i-1);
     mc700msg = fscanf(MC700BConnection);
@@ -56,5 +57,13 @@ for i = devlist % for each device, get the information
     end
     if(debugflag)
         fprintf(1, '\nMode: %s\n', tmode);
+    end;
+    fprintf(MC700BConnection, 'getPrimarySignalGain(%d)\n', i-1);
+    mc700bmsg = fscanf(MC700BConnection);
+    [vargs, err] = strparse(mc700bmsg);
+    if(err > 0)
+        t(i).gain = 1;
+    else
+        t(i).gain = str2double(vargs{1});
     end;
 end;

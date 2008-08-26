@@ -88,6 +88,7 @@ end;
 if(nargin == 0) % no arguments - create a window and initialize the program - wait for user to select configuration
     ACQVERSION = 3.1;
     ACQVERDATE = '8/19/2008';
+    warning('off','MATLAB:dispatcher:InexactCaseMatch')
     h = findobj('Tag', 'Acq'); % look for our window
     if(~isempty(h)) % a screen already exists - EXIT and let existing one run
         QueMessage('Only ONE instance of Acq allowed', 1');

@@ -67,8 +67,8 @@ switch lower(amplifier_string)
         return;
 
     case MCList % process multiclamp amplifiers a little differently. 
-        AmpStatus=checkMC700Mode; % read em and weep.
-        for i = 1:2
+        [AmpStatus] =checkMC700Mode; % read em and weep.
+        for i = [1,2]
             switch(AmpStatus(i).mode)
 
             case '0'
