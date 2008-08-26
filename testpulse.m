@@ -1,4 +1,4 @@
-function [outdata, tbase, out_rate, err] = testpulse(sfile);
+function [outdata, tbase, out_rate, err] = testpulse(sfile)
 % pulse: Method to generate pulse train waveforms
 % Usage
 %     Not normally called directly by the user
@@ -216,7 +216,7 @@ for n = 1 : length(pulse_begin) % for each pulse in the train
     for i=1:ns % each pulse consists of a series of steps, so create steps
         j = 0;
         j = floor(sfile.Duration.v(i)/(nrate/1000))-1; % Number of points in the duration step dur in msec; convert rate to msec too
-        if(relflag & i > 1) % check relative
+        if(relflag && i > 1) % check relative
             outdata{1}.vsco(k:k+j) = sfile.Level.v(1)*sfile.Level.v(i); % value is constant for that time
         else
             outdata{1}.vsco(k:k+j) = sfile.Level.v(i);
@@ -233,6 +233,7 @@ end;
 k = floor(pulse_begin/(nrate/1000)); % get the index of start of pulse
 
 j = floor(test_dur(1)/(nrate/1000))-1;
+
 outdata{1}.vsco(k:k+j) = sfile.TestLevel.v(1);
 
 outdata{1}.vsco = outdata{1}.vsco*sfile.Scale.v + sfile.Holding.v; % scale and offset the data
@@ -264,7 +265,7 @@ for m = 1:nout % for each element of the sequence
                 end;
             end;
             if(isempty(le)) % level setup
-                if(relflag & i > 1) % check relative
+                if(relflag && i > 1) % check relative
                     outdata{m}.v(k:k+j) = sfile.Level.v(1)*sfile.Level.v(i); % adjust subsequent levels relative to first level
                 else
                     outdata{m}.v(k:k+j) = sfile.Level.v(i); % otherwise just use the values
@@ -272,13 +273,13 @@ for m = 1:nout % for each element of the sequence
             else
                 if(find(i == parn(le))) % check if we are sequencing levels
                     ii = find(i == parn(le)); % find out which sequence corresponds
-                    if(relflag & i > 1) % check relative if sequencing
+                    if(relflag && i > 1) % check relative if sequencing
                         outdata{m}.v(k:k+j) = sfile.Level.v(1)*vlist{le(ii)}(m); % relative scaling
                     else
                         outdata{m}.v(k:k+j) = vlist{le(ii)}(m); % copy it over   
                     end;
                 else
-                    if(relflag & i > 1) % check relative if not sequencing
+                    if(relflag && i > 1) % check relative if not sequencing
                         outdata{m}.v(k:k+j) = sfile.Level.v(1)*sfile.Level.v(i); % value is constant for that time
                     else
                         outdata{m}.v(k:k+j) = sfile.Level.v(i);
@@ -290,10 +291,11 @@ for m = 1:nout % for each element of the sequence
     end
     outdata{m}.v(k+1:k+2) = 0;
     % now add the test pulses - in the same way.... 
+    pulse_end = max(pulse_begin); % time of last pulse in current stimuluse
     if(~isempty(test_de)) % compute step start times, according to npulses and ipi
-        pulse_begin = vlist{test_de}(m);
+        pulse_begin = vlist{test_de}(m) + pulse_end;
     else
-        pulse_begin = test_del; % single pulse.
+        pulse_begin = test_del + pulse_end; % single pulse.
     end;
     k = floor(pulse_begin/(nrate/1000)); % get the index of start of pulse
     for i=1:nts % each pulse can consist of a series of steps, so create steps
@@ -309,7 +311,7 @@ for m = 1:nout % for each element of the sequence
             end;
         end;
         if(isempty(test_lev)) % level setup
-            if(relflag & i > 1) % check relative
+            if(relflag && i > 1) % check relative
                 outdata{m}.v(k:k+j) = sfile.TestLevel.v(1)*sfile.TestLevel.v(i); % adjust subsequent levels relative to first level
             else
                 outdata{m}.v(k:k+j) = sfile.TestLevel.v(i); % otherwise just use the values
@@ -318,13 +320,13 @@ for m = 1:nout % for each element of the sequence
             %if(find(i == parn(tle))) % check if we are sequencing levels
             if(~isempty(tle))
                 ii = find(i == parn(tle)); % find out which sequence corresponds
-                if(relflag & i > 1) % check relative if sequencing
+                if(relflag && i > 1) % check relative if sequencing
                     outdata{m}.v(k:k+j) = sfile.TestLevel.v(1)*vlist{test_lev(ii)}(m); % relative scaling
                 else
                     outdata{m}.v(k:k+j) = vlist{tle(ii)}(m); % copy it over   
                 end;
             else
-                if(relflag & i > 1) % check relative if not sequencing
+                if(relflag && i > 1) % check relative if not sequencing
                     outdata{m}.v(k:k+j) = sfile.TestLevel.v(1)*sfile.TestLevel.v(i); % value is constant for that time
                 else
                     outdata{m}.v(k:k+j) = sfile.TestLevel.v(i);
