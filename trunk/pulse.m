@@ -168,7 +168,7 @@ for m = 1:nout % for each element of the sequence
         j1 = j2 + 1;
     end;
     for i = 1 : length(pulse_begin) % for each pulse in the train
-        k = floor(pulse_begin(i)/(nrate/1000)); % get the index of start of pulse
+        k = floor(pulse_begin(i)/(nrate/1000))+1; % get the index of start of pulse
         j = length(lev)-1; % subtract one for counting...
         % first, is this step variable at all?
         outdata{m}.v(k:k+j) = lev; % value is constant for that time
