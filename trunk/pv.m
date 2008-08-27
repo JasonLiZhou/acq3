@@ -65,7 +65,7 @@ if(~isstruct(sfile) && strmatch(sfile, '-p') && nodisp == 0) % just plot (that's
 end;
 
 
-if(isempty(sfile.waveform) || sfile.update == 0) % stimulus needs an update - generate it
+if(sfile.update == 0 || isempty(sfile.waveform)) % stimulus needs an update - generate it
     QueMessage('PV: computing...');
     % try
     [outdata, time_base, out_rate, err] = eval(sprintf('%s(sfile);',  sfile.Method.v));

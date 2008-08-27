@@ -60,7 +60,7 @@ if(isempty(c)) % no exact matches? then try for inexact matches
         try
             cmd_struct(cmd); % try to operate on the internal commands
         catch
-            QueMessage(sprintf('cmdparse: Internal command %s failed (cmd_struct)', cmd));
+            QueMessage(sprintf('command_parse: Internal command %s failed (cmd_struct)', cmd));
             QueMessage(sprintf('Error: %s',lasterr));
         end;
         clear_input(inscope); % whether it passes or fails, we are done
