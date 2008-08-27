@@ -37,7 +37,7 @@ end;
 % from the current DFILE and stim, get some information
 nchan=length(DFILE.Channels.v);
 % cycle=STIM.Cycle.v/1000;
-srate = DFILE.Actual_Rate.v*nchan/1000;
+srate = 1000000/(DFILE.Actual_Rate.v*nchan);
 
 % Do the on line analysis...
 for ol_win = 1:2

@@ -169,18 +169,18 @@ for m = 1:nout % for each element of the sequence
     end;
     for i = 1 : length(pulse_begin) % for each pulse in the train
         k = floor(pulse_begin(i)/(nrate/1000))+1; % get the index of start of pulse
-        j = length(lev)-1; % subtract one for counting...
+        j = length(lev); % subtract one for counting...
         % first, is this step variable at all?
-        outdata{m}.v(k:k+j) = lev; % value is constant for that time
+        outdata{m}.v(k:k+j-1) = lev; % value is constant for that time
         if(any(seqflags(:,durpos))) % duration is being sequenced
             j = floor(vlist{find(seqflags(:,durpos))}(m)/nrate);
-            outdata{m}.v(k:k+j) = lev; % value is constant for that time
+            outdata{m}.v(k:k+j-1) = lev; % value is constant for that time
         end;            % note that if both are sequenced, order is important!
         if(any(seqflags(:, levpos))) % level is being sequenced for this step
             if(relflag && i > 1)
-                outdata{m}.v(k:k+j) = lev*vlist{find(seqflags(:,levpos))}(m);
+                outdata{m}.v(k:k+j-1) = lev*vlist{find(seqflags(:,levpos))}(m);
             else
-                outdata{m}.v(k:k+j) = vlist{find(seqflags(:,levpos))}(m);
+                outdata{m}.v(k:k+j-1) = vlist{find(seqflags(:,levpos))}(m);
             end;
         end;
     end;

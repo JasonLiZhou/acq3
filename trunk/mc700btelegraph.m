@@ -15,7 +15,7 @@ function status = mc700btelegraph()
 global MC700BConnection HARDWARE
 persistent gain1errorflag gain2errorflag lpf1errorflag lpf2errorflag
 
-if(~exist('gain1errorflag', 'var')) % this flag controls the error report 
+if(~exist('gain1errorflag', 'var')) % this flag controls the error report
     gain1errorflag = 0;
     gain2errorflag = 0;
     lpf1errorflag = 0;
@@ -26,8 +26,8 @@ end;
 debugflag = 0;
 
 if(isempty(MC700BConnection))
-    fprintf(1, 'mc700btelegraph: Making connnection...  ');
-%     timeout = 2;
+%    fprintf(1, 'mc700btelegraph: Making connnection...  ');
+    %     timeout = 2;
     MC700BConnection = tcpip('localhost', 34567);
 
     try
@@ -39,7 +39,7 @@ if(isempty(MC700BConnection))
         return;
     end;
     %    fprintf(MC700BConnection, 'setreadtimeout',timeout);
-    fprintf(1, 'Connection successful\n');
+%    fprintf(1, 'Connection successful\n');
 end;
 
 fprintf(MC700BConnection, 'getNumDevices()')
@@ -60,6 +60,7 @@ end;
 status = struct ('measure', 'gain', 'unit', 'scaled_unit');
 for i = fliplr(devlist) % for each device, get the information
     fprintf(MC700BConnection, 'getPrimarySignalInfo(%d)\n', i-1);
+    pause(0.01);
     mc700msg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700msg);
     if(err == 0)
@@ -73,6 +74,7 @@ for i = fliplr(devlist) % for each device, get the information
     end;
 
     fprintf(MC700BConnection,  'getMode(%d)\n', i-1);
+    pause(0.01);
     mc700msg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700msg);
     if(err > 0)
@@ -86,36 +88,36 @@ for i = fliplr(devlist) % for each device, get the information
 
     %%%%  Use a DLL to read some other pareameteres....
     %%%%
-%    tgchan = mctgclient('start'); % also connect via Scott Molitor's DLL
-%    flag = mctgclient('select',tgchan(i));
-%    tg = mctgclient('read'); % and read the telegraph here.
-%    mctgclient('stop');
+    %    tgchan = mctgclient('start'); % also connect via Scott Molitor's DLL
+    %    flag = mctgclient('select',tgchan(i));
+    %    tg = mctgclient('read'); % and read the telegraph here.
+    %    mctgclient('stop');
     %%%% end of dll call - all the rest is with tcpip
     %%%%
-    
-%    status(i).extcmd = tg.extcmd;
-%    status(i).extcmd_unit = tg.extcmd_unit;
-%    status(i).mode = tg.mode;
-%
-% we leave this hard codeed because we cannot read it. You must be sure that 
-% you have set the amp to the corerect gain settings to match. At some point
-% I will write something to test this when the program is started.
+
+    %    status(i).extcmd = tg.extcmd;
+    %    status(i).extcmd_unit = tg.extcmd_unit;
+    %    status(i).mode = tg.mode;
+    %
+    % we leave this hard codeed because we cannot read it. You must be sure that
+    % you have set the amp to the corerect gain settings to match. At some point
+    % I will write something to test this when the program is started.
 
     switch(unblank(tmode))
-         case 'VC'
-             status(i).mode = 'V-Clamp';
-             status(i).extcmd = HARDWARE.multiclamp.ExtCmd_VC(i);
-             status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsVC '/V'];
-             
-         case 'I=0'
-             status(i).mode = 'I = 0';
-             status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
-             status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
-         case {'IC', 'C'}
-             status(i).mode = 'I-Clamp';
-             status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
-             status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
-     end;
+        case 'VC'
+            status(i).mode = 'V-Clamp';
+            status(i).extcmd = HARDWARE.multiclamp.ExtCmd_VC(i);
+            status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsVC '/V'];
+
+        case 'I=0'
+            status(i).mode = 'I = 0';
+            status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
+            status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
+        case {'IC', 'C'}
+            status(i).mode = 'I-Clamp';
+            status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
+            status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
+    end;
     fprintf(MC700BConnection, 'getPrimarySignalGain(%d)\n', i-1);
     mc700bmsg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700bmsg);
@@ -132,7 +134,7 @@ for i = fliplr(devlist) % for each device, get the information
     mc700bmsg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700bmsg);
     if(err > 0)
-         if(~lpf1errorflag)
+        if(~lpf1errorflag)
             fprintf(1, 'Unable to get Primary Signal LPF on MC700A amplifier: setting to 0\n');
             lpf1errorflag = 1;
         end;
@@ -169,6 +171,8 @@ for i = fliplr(devlist) % for each device, get the information
     status(i).lpf_unit2='Hz';
 
 end;
+fclose(MC700BConnection);
+MC700BConnection = [];
 
 
 

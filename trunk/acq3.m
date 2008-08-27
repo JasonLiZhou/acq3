@@ -179,6 +179,8 @@ else
                     end;
                     %fprintf(1, 'MC700 Connected on %d \n', MC700BConnection);
                     fprintf(1, 'MC700 %d Connected \n', MC700BConnection.serialnum(1));
+                    fclose(MC700BConnection);
+                    MC700BConnection = [];
                 otherwise
             end;
 
