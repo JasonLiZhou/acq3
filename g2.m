@@ -27,7 +27,6 @@ if(IN_ACQ)
     QueMessage('Already in acquisition: cannot change protocols', 1);
 end;
 
-
 onl = [];
 if(nargout > 0)
     for i = 1:nargout
@@ -51,6 +50,7 @@ if(nargin == 0)
     end;
     sfilename=fullfile(stimpath, stimname);
 end;
+
 sfilename=unblank(sfilename);
 [path file ext] = fileparts(sfilename); % if filename still missing extension, add the default
 if(isempty(ext))
@@ -65,46 +65,20 @@ end;
 fclose(fid);
 a = load(sfilename);
 sf=a.STIM;
-%Ignore anciallary information in the file when getting secondary block for editing.
-%x = fieldnames(a);
-
-%if(strmatch('DFILE', x, 'exact')) % indicates that an acquisition blockwas stored with the stimulus
-%   df = a.DFILE;
-%   sf.AcqFile.v = []; % force internal (although should note be necessary
-%end;
-%if(strmatch('ONLINE', x, 'exact'))
-%   onl = a.ONLINE;
-%end;
 
 cd(wd);
 if(chkfile(sf))
     return;
 end;
+% if pulse editor is up and the type is "pulse", let's force it to
+% reload.
+pulse_edit('changefile'); % check it out.   
 
 if(nargout == 0) % no output - place it globally and DO things to it
     STIM2 = sf; % get it back
-    %  if(~isempty(unblank(STIM.AcqFile.v)))
-    %      ga(STIM.AcqFile.v);  % first get the acquisition file
-    % else
-    %      if(strmatch('DFILE', x, 'exact'))
-    %         DFILE = df; % retrieve acq parameters from the internal file
-    %         struct_edit('load', DFILE);
-    %      end;
-
-    %   struct_edit('load', STIM2); % then do the new stim file so its up last
-    % STIM2 = pv(STIM2, 1); % execute a preview, no display (make sure parameters are up t date).
-    %      set_hold;
-    % end;
-    %   if(strmatch('ONLINE', x, 'exact'))
-    %      ONLINE = onl; % no struct_edit for online analysis
-    %      on_line('update'); % but update window if it is displayed.
-    %  end;
     QueMessage(sprintf('g2: Stim2 Params loaded from %s', sfilename));
 else % an output - ? just return the structure in the designated argument
     varargout(1) = {a.STIM};
-    %  if(nargout == 2 & strmatch('DFILE', x, 'exact'))
-    %     varargout(2) = {a.DFILE};
-    %  end;
     QueMessage(sprintf('g2: Stim2 Params returned from %s', sfilename));
 end;
 return;

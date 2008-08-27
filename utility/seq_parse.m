@@ -1,4 +1,4 @@
-function [seq, nseq] = seq_parse(list)
+function [varargout] = seq_parse(list)
 % parse the list of the format:
 % 12;23/10 etc... like nxtrec in datac
 % now also parses matlab functions and array formats, using eval
@@ -23,12 +23,22 @@ function [seq, nseq] = seq_parse(list)
 % Paul B. Manis, Ph.D.
 % pmanis@med.unc.edu
 
-seq={};
-
 if(nargout < 1)
     QueMessage('seq_parse: insufficient output arguments', 1);
     return;
 end;
+
+seq={};
+varargout{1} = seq;
+
+if(nargout == 2)
+    nseq = [];
+    varargout{2} = nseq;
+end;
+
+
+
+
 if(isnumeric(list))
     QueMessage('seq_parse: input must be string, not numeric', 1);
     return;
@@ -123,6 +133,10 @@ l=length(xo);
 if(l == 1)
     seq{1} = xo{1};
     nseq = size(seq{1});
+    varargout{1} = seq;
+    if(nargout > 1)
+        varargout{2} = nseq;
+    end;
     return;
 end;
 
@@ -151,6 +165,10 @@ catch %#ok<CTCH>
     QueMessage(sprintf('seq_parse: Failed to evaluate %s \n  -- ???? FATAL ???? --\n', cmd),1);
     seq={};
     nseq = 0;
+    varargout{1} = seq;
+    if(nargout > 1)
+        varargout{2} = nseq;
+    end;
     return;
 end;
 
@@ -158,6 +176,10 @@ for i = 1:l
     seq{i} = reshape(s{i}, 1, numel(s{i}));
 end;
 nseq = squeeze(size(s{1})); % remove the singleton dimensions
+varargout{1} = seq;
+if(nargout > 1)
+    varargout{2} = nseq;
+end;
 return;
 
 
