@@ -617,10 +617,12 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                 putvalue(DIO, [1 1 getvalue(DIO.Line(3:6))]);
                 start(DIO); % timere just ruens until we don't need it anymore.
             end;
-            while((get(AI, 'SamplesAvailable') < nsamp)) % && (toc  < cycle*1.2))
+            % it is critical to test STOP_ACQ here - otherwise async call to acq_stop or bye can
+            % kill the AI while we are "running", causing an error. 
+            while(~STOP_ACQ && (get(AI, 'SamplesAvailable') < nsamp)) % && (toc  < cycle*1.2))
                 pause(0.01);
             end;
-            if(~isvalid(AI) || STOP_ACQ)
+            if(STOP_ACQ || ~isvalid(AI)) % verify the stop conditions.
                 retval = SCOPE_FLAG;
                 gather(filename, tmp_file, filewrite, local_sf);
                 clean_up(tmp_file);
