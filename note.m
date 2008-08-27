@@ -16,7 +16,7 @@ function note(varargin)
 % pmanis@med.unc.edu
 %
 % generate the fields to fill in
-global HFILE FILE_STATUS
+global HFILE FILE_STATUS FILEFORMAT
 
 if(isempty(HFILE)) % no file open?
     QueMessage('note: No Acquisition File Open!', 1);

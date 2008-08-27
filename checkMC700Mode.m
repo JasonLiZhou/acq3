@@ -6,7 +6,7 @@ status = [];
 debugflag = 0;
 
 if(isempty(MC700BConnection))
-    fprintf(1, 'mc700btelegraph: Making connnection...  ');
+%    fprintf(1, 'mc700btelegraph: Making connnection...  ');
     timeout = 2;
     MC700BConnection = tcpip('localhost', 34567);
 
@@ -19,7 +19,7 @@ if(isempty(MC700BConnection))
         return;
     end;
     %    fprintf(MC700BConnection, 'setreadtimeout',timeout);
-    fprintf(1, 'Connection successful\n');
+%    fprintf(1, 'Connection successful\n');
 end;
 
 fprintf(MC700BConnection, 'getNumDevices()')
@@ -39,6 +39,7 @@ gain = [1,1];
 for i = fliplr(devlist) % for each device, get the information
 
     fprintf(MC700BConnection,  'getMode(%d)\n', i-1);
+    pause(0.1);
     mc700msg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700msg);
     if(err > 0)
@@ -59,6 +60,7 @@ for i = fliplr(devlist) % for each device, get the information
         fprintf(1, '\nMode: %s\n', tmode);
     end;
     fprintf(MC700BConnection, 'getPrimarySignalGain(%d)\n', i-1);
+    pause(0.1);
     mc700bmsg = fscanf(MC700BConnection);
     [vargs, err] = strparse(mc700bmsg);
     if(err > 0)
@@ -67,3 +69,5 @@ for i = fliplr(devlist) % for each device, get the information
         t(i).gain = str2double(vargs{1});
     end;
 end;
+fclose(MC700BConnection);
+MC700BConnection = [];
