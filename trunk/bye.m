@@ -11,27 +11,28 @@ function bye()
 % Currently, only closes the window and the data file.
 %
 global MC700BConnection
-global AO AI
+global AO AI DEVICE_ID
 
 fprintf(2, '\nACQ3 Quitting\n');
+acq_stop;
 
 if(~isnumeric(MC700BConnection) && ~isempty(MC700BConnection) && isvalid(MC700BConnection))
     fclose(MC700BConnection);
     delete(MC700BConnection);
 end;
 clear MC700BConnection;
-if(isvalid(AO))
+if(~isempty(AO) && isvalid(AO))
     stop(AO)
 end;
-if(isvalid(AI))
+if(~isempty(AI) && isvalid(AI))
     stop(AI)
 end;
-if (~isempty(daqfind)) % causes preoblems - delete...
+if(DEVICE_ID > 0)
+    if (~isempty(daqfind)) % causes preoblems - delete...
     delete(daqfind);
-end
-%daqregister('nidaq', 'unload');
-
-daqreset;
+    end
+    daqreset;
+end;
 
 ac;
 % list the possible windows and then close them

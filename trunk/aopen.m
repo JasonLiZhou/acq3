@@ -104,21 +104,21 @@ HFILE.Version = ACQVERSION;
 %HFILE.path = [BASEPATH pa];
 HFILE.path = pa;
 if(~isempty(hf))
-    HFILE.Experiment = hf.Experiment.v;
-    HFILE.Species = hf.Species.v;
-    HFILE.Age = hf.Age.v;
-    HFILE.Weight = hf.Weight.v;
-    HFILE.Sex = hf.Sex.v;
-    HFILE.DIV = hf.DIV.v;
-    HFILE.Signature = hf.Signature.v;
+    HFILE.Experiment.v = hf.Experiment.v;
+    HFILE.Species.v = hf.Species.v;
+    HFILE.Age.v = hf.Age.v;
+    HFILE.Weight.v = hf.Weight.v;
+    HFILE.Sex.v = hf.Sex.v;
+    HFILE.DIV.v = hf.DIV.v;
+    HFILE.Signature.v = hf.Signature.v;
 else
-    HFILE.Experiment = '';
-    HFILE.Species = '';
-    HFILE.Sex = '';
-    HFILE.Age = '';
-    HFILE.Weight = '';
-    HFILE.DIV = '';
-    HFILE.Signature = '';
+    HFILE.Experiment.v = '';
+    HFILE.Species.v = '';
+    HFILE.Sex.v = '';
+    HFILE.Age.v = '';
+    HFILE.Weight.v = '';
+    HFILE.DIV.v = '';
+    HFILE.Signature.v = '';
 end;
 
 
@@ -145,13 +145,13 @@ if(isempty(answer)) % we canceled out of the dialog...
     ACQ_FILENAME = [];
     return;
 end;
-HFILE.Experiment.v = answer(1,:);
-HFILE.Species.v = answer(2,:);
-HFILE.Age.v = answer(3,:);
-HFILE.Sex.v = answer(4,:);
-HFILE.Weight.v = answer(5,:);
-HFILE.DIV.v = answer(6,:);
-HFILE.Signature.v = answer(7,:);
+HFILE.Experiment.v = answer{1};
+HFILE.Species.v = answer{2};
+HFILE.Age.v = answer{3};
+HFILE.Sex.v = answer{4};
+HFILE.Weight.v = answer{5};
+HFILE.DIV.v = answer{6};
+HFILE.Signature.v = answer{7};
 FILE_STATUS.Record = 1; % initialize internal file information counters
 FILE_STATUS.Block = 1;
 FILE_STATUS.NoteCount = 1;
