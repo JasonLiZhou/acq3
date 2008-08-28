@@ -124,7 +124,7 @@ if(nargout == 0) % no output - place it globally and DO things to it
             DFILE = df; % retrieve acq parameters from the internal file
             struct_edit('load', DFILE);
         end;
-        struct_edit('load', STIM); % then do the new stim file so its up last
+        struct_edit('load', STIM); % THIS ONE... then do the new stim file so its up last
         pv('-p'); % execute a preview with no calculation - just display it.
     end;
         set_hold;

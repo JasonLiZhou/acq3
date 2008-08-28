@@ -190,7 +190,9 @@ if(~isempty(strmatch('vsco', fieldnames(stimfile.waveform{1}))))
         plot(stimfile.tbase{1}.vsco(1:skip:end), stimfile.waveform{1}.vsco(1:skip:end), '-r');
     end;
 end;
-
+set(gca, 'Tag', 'ACQ_DAC0');
+acq_setcrosshair(gca, 'DAC0', 'ms', '', ...
+    [pvf1.left+pvf1.width*0.95 pvf1.bottom+pvf1.height*0.5 pvf1.width*0.22 pvf1.height*0.2]);
 
 ha = gca;
 set(ha,'box','off');
@@ -200,7 +202,7 @@ set(ha, 'YColor', c_ax);
 set(ha, 'Fontsize', fsize);
 set_axis;
 
-pvw2=[0.08 0.55 0.84 0.45];
+pvw2=[0.08 0.65 0.84 0.35];
 pvf2 = frameit(pvw2, framesz, figsz);
 hp(2)=subplot('position', [pvf2.left, pvf2.bottom, pvf2.width, pvf2.height]);
 
@@ -233,6 +235,9 @@ if(strmatch('v2sco', fieldnames(stimfile.waveform{1})))
         plot(stimfile.tbase{1}.vsco(1:skip:end), stimfile.waveform{1}.v2sco(1:skip:end), '-r');
     end;
 end;
+set(gca, 'Tag', 'ACQ_DAC1');
+acq_setcrosshair(gca, 'DAC1', 'ms', '', ...
+    [pvf2.left+pvf2.width*0.95 pvf2.bottom+pvf2.height*0.5 pvf2.width*0.22 pvf2.height*0.2]);
 
 ha = gca;
 set(ha,'box','off');
@@ -240,7 +245,7 @@ set(ha, 'color', 'black');
 set(ha, 'XColor', c_ax);
 set(ha, 'YColor', c_ax);
 set(ha, 'Fontsize', fsize);
-set(ha, 'XTickLabel', '');
+%set(ha, 'XTickLabel', '');
 set_axis;
 
 

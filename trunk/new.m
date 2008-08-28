@@ -175,8 +175,8 @@ switch(method)
         sfile.Level=create_element([100,-100], MULT, 12, 'Levels(mV)', '%8.1f'); % interim holding value
         sfile.LevelFlag=create_element('absolute', MULT, 13, 'LevelFlag', '%s');
         sfile.Scale=create_element(1, SGL, 14, 'Scale', '%8.3f', 0, -100000, 100000);
-        sfile.Sequence=create_element('1;100/25', SGL, 15, 'Sequence', '%c');
-        sfile.SeqParList=create_element('Level', MULT, 16, 'SeqParameter', '%c');
+        sfile.Sequence=create_element('10;100/5l', SGL, 15, 'Sequence', '%c');
+        sfile.SeqParList=create_element('testdelay', MULT, 16, 'SeqParameter', '%c');
         sfile.SeqStepList=create_element(1, MULT, 17, 'SeqStepNo', '%d', 0, 1);
         sfile.TestLevel=create_element(100, MULT, 18, 'TestLevel', '%8.1f'); % test pulse level
         sfile.TestDuration=create_element(0.1, MULT, 19, 'TestDuration(ms)', '%8.1f'); % test pulse level

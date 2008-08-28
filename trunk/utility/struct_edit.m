@@ -202,8 +202,6 @@ else
     end;
 end;
 
-% n_field = e_field-s_field+1;
-
 
 thisframe = findobj('Tag', arg.frame); % check for pre-existing data
 if(isempty(thisframe))
@@ -211,9 +209,9 @@ if(isempty(thisframe))
     return;
 end;
 frh = get(thisframe, 'UserData'); % access the data
-drawnow;
+%drawnow;
 if(isempty(frh)) % frame is not built yet? - then build it
-    %   fprintf(2, 'Building frame for %s\n', arg.frame);
+%       fprintf(2, 'Building frame for %s\n', arg.frame);
     set(thisframe, 'Units', 'characters');
     figsz=get(thisframe, 'Position');
 
@@ -294,24 +292,24 @@ if(isempty(h))
     fprintf('struct_edit, switch_frame: no handles for arg type = %s\n', arg.NAME);
     return;
 end;
-for i = 1:length(hn)
-    set(hn(i), 'Visible', 'off');
-end;
-for i=1:length(h)
-    set(h(i), 'Visible', 'on');
-end;
+%for i = 1:length(hn)
+    set(hn, 'Visible', 'off');
+%end;
+%for i=1:length(h)
+    set(h, 'Visible', 'on');
+%end;
 
 [h, hn] = get_handles(arg, 't');
 if(isempty(h))
     fprintf('struct_edit, switch_frame: no handles for arg type = %s\n', arg.NAME);
     return;
 end;
-for i = 1:length(hn)
-    set(hn(i), 'Visible', 'off');
-end;
-for i=1:length(h)
-    set(h(i), 'Visible', 'on');
-end;
+%for i = 1:length(hn)
+    set(hn, 'Visible', 'off');
+%end;
+%for i=1:length(h)
+    set(h, 'Visible', 'on');
+%end;
 
 return;
 
@@ -506,5 +504,5 @@ for i = ds:de
     end;
 end;
 switch_frame(dnew);
-drawnow;
+%drawnow;
 return;
