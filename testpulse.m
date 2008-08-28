@@ -91,7 +91,7 @@ end;
 
 % get pulse number and check to see if its valid
 parn = sfile.SeqStepList.v; % and the pulse element number to operate on
-if(any(parn > ns) | any(parn < 1))
+if(any(parn > ns) || any(parn < 1))
     fprintf('pulse: Attempt to sequence invalid step #\n');
     err = 1;
     return;
@@ -182,20 +182,18 @@ else
     tot_dur2 = tot_dur2 + test_dur+1; % always add 1 msec to end of the thing.
 end;
 
-tot_dur2;
 if(tot_dur2 > tot_dur)
     tot_dur = tot_dur2;
 end;
-if(isempty(nrate) | nrate < 1)
+if(isempty(nrate) || nrate < 1)
     nrate = sfile.Sample_Rate.v;
 end;
 npts = floor(0.5+tot_dur/(nrate/1000));  % points in the array
-tot_dur;
 
 % check the level flag.
-if (strcmp(lower(sfile.LevelFlag.v), 'relative'))
+if (strcmpi(sfile.LevelFlag.v, 'relative'))
     relflag = 1;
-elseif (strcmp(lower(sfile.LevelFlag.v), 'absolute'))
+elseif (strcmpi(sfile.LevelFlag.v, 'absolute'))
     relflag = 0; % means nothing - just a place holder
 else % error
     QueMessage('pulse: LevelFlag must be ''relative'' or ''absolute''\n', 1);

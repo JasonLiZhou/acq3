@@ -42,6 +42,7 @@ if(length(h1) > 1) % too many? (one and only one allowed)
     QueMessage(sprintf('text_entry: title tag %s has more than one instance', tag2), 1);
     return;
 end;
+% list the title tags here:
 if(isempty(h1)) % none by that name, so its ok to create one
     h1 = uicontrol('Units','characters', ...
         'ListboxTop',0, ...

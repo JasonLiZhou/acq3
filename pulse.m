@@ -157,16 +157,8 @@ for m = 1:nout % for each element of the sequence
         pulse_begin = sdel + (0 : sfile.Npulses.v - 1) * bipi; % single pulse.
     end;
     lev = [];
-    j1 = 1;
-    for p = 1:length(sfile.Duration.v) % each pulse consists of a series of steps, so create steps
-        j2 = floor(sfile.Duration.v(p)/(nrate/1000)); % Number of points in the duration step dur in msec; convert rate to msec too
-        if(relflag && i > 1) % check relative
-            lev(j1:j1+j2-1)  = sfile.Level.v(1)*sfile.Level.v(p); % value is constant for that time
-        else
-            lev(j1:j1+j2-1) = sfile.Level.v(p);
-        end;
-        j1 = j2 + 1;
-    end;
+    [lev] = pulsegenerate(sfile.Duration.v, sfile.Level.v, relflag, nrate);
+
     for i = 1 : length(pulse_begin) % for each pulse in the train
         k = floor(pulse_begin(i)/(nrate/1000))+1; % get the index of start of pulse
         j = length(lev); % subtract one for counting...
@@ -177,11 +169,11 @@ for m = 1:nout % for each element of the sequence
             outdata{m}.v(k:k+j-1) = lev; % value is constant for that time
         end;            % note that if both are sequenced, order is important!
         if(any(seqflags(:, levpos))) % level is being sequenced for this step
-            if(relflag && i > 1)
-                outdata{m}.v(k:k+j-1) = lev*vlist{find(seqflags(:,levpos))}(m);
-            else
-                outdata{m}.v(k:k+j-1) = vlist{find(seqflags(:,levpos))}(m);
-            end;
+            levlist = sfile.Level.v;
+            lpos = find(seqflags(:,levpos));
+            levlist(lpos) = vlist{lpos}(m);
+            levls = pulsegenerate(sfile.Duration.v, levlist, relflag, nrate);
+            outdata{m}.v(k:k+j-1) = levls;
         end;
     end;
 
@@ -212,3 +204,15 @@ end;
 err = 0; % only clear error flag if we make it all the way through.
 
 return
+
+function [lev] = pulsegenerate(Duration, Level, relflag, nrate)
+j1 = 1;
+    for p = 1:length(Duration) % each pulse consists of a series of steps, so create steps
+        j2 = floor(Duration(p)/(nrate/1000)); % Number of points in the duration step dur in msec; convert rate to msec too
+        if(relflag && i > 1) % check relative
+            lev(j1:j1+j2-1)  = Level(1)*Level(p); % value is constant for that time
+        else
+            lev(j1:j1+j2-1) = Level(p);
+        end;
+        j1 = j2 + 1;
+    end;
