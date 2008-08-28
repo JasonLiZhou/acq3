@@ -324,7 +324,7 @@ return;
 function t = chklimits(tx, DFILE)
 % function to check the time limits; returns a point value
 % corresponding to the time
-t = floor(tx*(10^6/(DFILE.Actual_Rate.v*length(DFILE.Channels.v))));
+t = floor(tx*DFILE.Actual_Rate.v/1000); % *length(DFILE.Channels.v))));
 if(t > DFILE.Points.v)
     t = DFILE.Points.v;
 end;

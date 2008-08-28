@@ -69,8 +69,8 @@ switch(op)
             save('INDEX', 'INDEX', '-append', FILEFORMAT); % build data file
         else
             save('INDEX', 'INDEX', '-append'); % build data file
-        end;        save ('INDEX', 'INDEX', '-append');
-
+        end;        
+        
     case 'close'
         if(isempty(ACQ_FILENAME))
             QueMessage('index_file: ? No file to append index to', 1);
