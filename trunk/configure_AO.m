@@ -5,8 +5,10 @@ global MCList AXPList APRList HARDWARE
 global HOLD_CURRENT
 
 if(~isvalid(AO))
-    error('configure AO: invalide analog output object')
+    error('configure AO: invalid analog output object')
 end;
+
+h1 = [0 0];
 
 stop(AO);
 delete(AO.Channel);

@@ -1,29 +1,20 @@
 function [t,gain] = checkMC700Mode()
 
-global MC700BConnection
 
 status = [];
 debugflag = 0;
+t(1).mode = '';
+t(2).mode = '';
+t(1).gain = 1;
+t(2).gain = 1;
 
-if(isempty(MC700BConnection))
-%    fprintf(1, 'mc700btelegraph: Making connnection...  ');
-    timeout = 2;
-    MC700BConnection = tcpip('localhost', 34567);
-
-    try
-        fopen(MC700BConnection);
-    catch
-        fprintf(1, 'unable to open TCP server\n');
-        fprintf(1, 'Cannot Connect to Multiclamp TCP Server\n');
-        status = [];
-        return;
-    end;
-    %    fprintf(MC700BConnection, 'setreadtimeout',timeout);
-%    fprintf(1, 'Connection successful\n');
+[conn, err]  = MC700('open');
+if(err)
+    return;
 end;
 
-fprintf(MC700BConnection, 'getNumDevices()')
-ndev = fscanf(MC700BConnection);
+fprintf(conn, 'getNumDevices()')
+    ndev = getMC700(conn);
 %u = find(ndev == 0);
 %ndev(u) = ' '; % clean null strings.
 
@@ -38,9 +29,8 @@ gain = [1,1];
 
 for i = fliplr(devlist) % for each device, get the information
 
-    fprintf(MC700BConnection,  'getMode(%d)\n', i-1);
-    pause(0.1);
-    mc700msg = fscanf(MC700BConnection);
+    fprintf(conn,  'getMode(%d)\n', i-1);
+    mc700msg = getMC700(conn);
     [vargs, err] = strparse(mc700msg);
     if(err > 0)
         status(i).mode = 'X';
@@ -59,9 +49,9 @@ for i = fliplr(devlist) % for each device, get the information
     if(debugflag)
         fprintf(1, '\nMode: %s\n', tmode);
     end;
-    fprintf(MC700BConnection, 'getPrimarySignalGain(%d)\n', i-1);
-    pause(0.1);
-    mc700bmsg = fscanf(MC700BConnection);
+    fprintf(conn, 'getPrimarySignalGain(%d)\n', i-1);
+
+    mc700bmsg = getMC700(conn);
     [vargs, err] = strparse(mc700bmsg);
     if(err > 0)
         t(i).gain = 1;
@@ -69,5 +59,5 @@ for i = fliplr(devlist) % for each device, get the information
         t(i).gain = str2double(vargs{1});
     end;
 end;
-fclose(MC700BConnection);
-MC700BConnection = [];
+MC700('close');
+

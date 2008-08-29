@@ -1,10 +1,13 @@
-function [AmpStatus, err] = compare_modes(varargin)
+function [AmpMode, err] = compare_modes(varargin)
 %
 % function to read telegraph and return 0 if amplifier is in same mode as
 % target from acq (DFILE)
 % and return 1 if it is not in same mode (which is an error)
 % 9/11/2000
+% do NOT let this return an "AmpStatus" since the result returned is
+% incomplete with respect to the telegraph AmpStatus outputs ... 
 % Paul B. Manis
+% 8/29/2008 
 %
 global MCList AXPList APRList HARDWARE DEVICE_ID %#ok<NUSED,NUSED>
 
@@ -28,15 +31,15 @@ end;
 switch lower(amplifier_string)
     case {'axoprobe1a', 'axoprobe'}
         err = 0;
-        AmpStatus.Mode = 'I';
-        AmpStatus.LPF = 5.0;
-        AmpStatus.Gain = 10.0;
+        AmpMode.Mode = 'I';
+        AmpMode.LPF = 5.0;
+        AmpMode.Gain = 10.0;
         return;
 
 
     case AXPList % process axopatch amplifiers.
-        AmpStatus=telegraph; % read em and weep.
-        switch(AmpStatus.Mode)
+        AmpMode=telegraph; % read em and weep.
+        switch(AmpMode.Mode)
             case 'T'
                 QueMessage('Amplifier Mode Error: Track Mode - No Acquisition', 1);
                 return;
@@ -67,9 +70,9 @@ switch lower(amplifier_string)
         return;
 
     case MCList % process multiclamp amplifiers a little differently.
-        [AmpStatus] = checkMC700Mode; % read em and weep.
+        [AmpMode] = checkMC700Mode; % read em and weep.
         for i = [1,2]
-            switch(AmpStatus(i).mode)
+            switch(AmpMode(i).mode)
 
                 case '0'
                     QueMessage('Amplifier I = 0', 1);
@@ -104,7 +107,7 @@ switch lower(amplifier_string)
         end;
     otherwise
         err = 0; % can't read mode, just return OK.
-        AmpStatus.Mode = 'X'; % unknown
-        AmpStatus.LPF = 5.0; % filler information.
-        AmpStatus.Gain = 10.0;
+        AmpMode.Mode = 'X'; % unknown
+        AmpMode.LPF = 5.0; % filler information.
+        AmpMode.Gain = 10.0;
 end;

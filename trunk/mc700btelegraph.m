@@ -1,4 +1,4 @@
-function status = mc700btelegraph()
+function [status] = mc700btelegraph()
 %
 % telegraph wrapper for Lukes TCP
 % requires using tcp_ip code from mathworks user support.
@@ -12,8 +12,12 @@ function status = mc700btelegraph()
 % lpf_unit
 % lpf (in lpf_unit)
 %
-global MC700BConnection HARDWARE
+global HARDWARE
+% global AmpStatus
+
 persistent gain1errorflag gain2errorflag lpf1errorflag lpf2errorflag
+
+status = [];
 
 if(~exist('gain1errorflag', 'var')) % this flag controls the error report
     gain1errorflag = 0;
@@ -25,25 +29,13 @@ end;
 
 debugflag = 0;
 
-if(isempty(MC700BConnection))
-%    fprintf(1, 'mc700btelegraph: Making connnection...  ');
-    %     timeout = 2;
-    MC700BConnection = tcpip('localhost', 34567);
-
-    try
-        fopen(MC700BConnection);
-    catch
-        fprintf(1, 'unable to open TCP server\n');
-        fprintf(1, 'Cannot Connect to Multiclamp TCP Server\n');
-        status = [];
-        return;
-    end;
-    %    fprintf(MC700BConnection, 'setreadtimeout',timeout);
-%    fprintf(1, 'Connection successful\n');
+[conn, err]  = MC700('open');
+if(err)
+    return;
 end;
 
-fprintf(MC700BConnection, 'getNumDevices()')
-ndev = fscanf(MC700BConnection);
+fprintf(conn, 'getNumDevices()')
+ndev = getMC700(conn);
 %u = find(ndev == 0);
 %ndev(u) = ' '; % clean null strings.
 
@@ -57,12 +49,12 @@ end;
 
 
 
-status = struct ('measure', 'gain', 'unit', 'scaled_unit');
+status = struct ('measure', {}, 'gain', {}, 'unit', {}, 'scaled_unit', {});
 for i = fliplr(devlist) % for each device, get the information
-    fprintf(MC700BConnection, 'getPrimarySignalInfo(%d)\n', i-1);
-    pause(0.01);
-    mc700msg = fscanf(MC700BConnection);
-    [vargs, err] = strparse(mc700msg);
+    fprintf(conn, 'getPrimarySignalInfo(%d)\n', i-1);
+    mc700msg = getMC700(conn);
+
+   [vargs, err] = strparse(mc700msg);
     if(err == 0)
         status(i).measure = vargs{1};
         status(i).gain = vargs{2};
@@ -70,12 +62,11 @@ for i = fliplr(devlist) % for each device, get the information
         status(i).scaled_unit = ['V/' vargs{3}];
     end;
     if(debugflag)
-        fprintf(1, 'Status = %d\n', status(i));
+        fprintf(1, 'Status.gain = %d\n', status(i).gain);
     end;
 
-    fprintf(MC700BConnection,  'getMode(%d)\n', i-1);
-    pause(0.01);
-    mc700msg = fscanf(MC700BConnection);
+    fprintf(conn,  'getMode(%d)\n', i-1);
+    mc700msg = getMC700(conn);
     [vargs, err] = strparse(mc700msg);
     if(err > 0)
         status(i).mode = 'X';
@@ -118,8 +109,8 @@ for i = fliplr(devlist) % for each device, get the information
             status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
             status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
     end;
-    fprintf(MC700BConnection, 'getPrimarySignalGain(%d)\n', i-1);
-    mc700bmsg = fscanf(MC700BConnection);
+    fprintf(conn, 'getPrimarySignalGain(%d)\n', i-1);
+    mc700bmsg = getMC700(conn);
     [vargs, err] = strparse(mc700bmsg);
     if(err > 0)
         if(~gain1errorflag)
@@ -130,8 +121,8 @@ for i = fliplr(devlist) % for each device, get the information
     end;
     status(i).scaled_gain = str2double(vargs{1});
 
-    fprintf(MC700BConnection,  'getPrimarySignalLPF(%d)\n', i-1);
-    mc700bmsg = fscanf(MC700BConnection);
+    fprintf(conn,  'getPrimarySignalLPF(%d)\n', i-1);
+    mc700bmsg = getMC700(conn);
     [vargs, err] = strparse(mc700bmsg);
     if(err > 0)
         if(~lpf1errorflag)
@@ -143,8 +134,8 @@ for i = fliplr(devlist) % for each device, get the information
     status(i).lpf = str2double(vargs{1});
     status(i).lpf_unit='Hz';
 
-    fprintf(MC700BConnection, 'getSecondarySignalGain(%d)\n', i-1);
-    mc700bmsg = fscanf(MC700BConnection);
+    fprintf(conn, 'getSecondarySignalGain(%d)\n', i-1);
+    mc700bmsg = getMC700(conn);
     [vargs, err] = strparse(mc700bmsg);
     if(str2double(vargs{1}) < 0.001 || err > 0)
         if(~gain2errorflag)
@@ -156,8 +147,8 @@ for i = fliplr(devlist) % for each device, get the information
         status(i).scaled_gain2 = str2double(vargs{1});
     end;
 
-    fprintf(MC700BConnection, 'getSecondarySignalLPF(%d)\n', i-1);
-    mc700bmsg = fscanf(MC700BConnection);
+    fprintf(conn, 'getSecondarySignalLPF(%d)\n', i-1);
+    mc700bmsg = getMC700(conn);
     [vargs, err] = strparse(mc700bmsg);
     if(str2double(vargs{1}) < 0.1 || err > 0)
         if(~lpf2errorflag)
@@ -171,8 +162,7 @@ for i = fliplr(devlist) % for each device, get the information
     status(i).lpf_unit2='Hz';
 
 end;
-fclose(MC700BConnection);
-MC700BConnection = [];
+MC700('close');
 
 
 

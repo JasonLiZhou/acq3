@@ -65,7 +65,7 @@ function sw(varargin)
 % HARDWARE parameter set.
 %
 global ACQ_DEVICE HARDWARE AO MCList AXPList APRList
-global DEVICE_ID WAI CONFIG
+global DEVICE_ID WAI CONFIG AmpStatus
 
 oldmclamp = {'old_multiclamp'};
 
@@ -110,7 +110,7 @@ end
 
 % read the current value
 % cannot start in I = 0 mode!
-AmpStatus = telegraph;
+% AmpStatus = telegraph;
 old_mode = AmpStatus.Mode;
 
 switch (amplifier_string)

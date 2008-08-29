@@ -28,6 +28,7 @@ global ACQ_DEVICE HARDWARE %#ok<NUSED>
 global DEVICE_ID WAI
 global DFILE MCList AXPList
 
+
 bus = 0;
 if(nargin == 0)
     InputSelect = 1;
@@ -191,10 +192,13 @@ switch (amplifier_string)
         % read MC700B telegraphs on both channels
         % store to Data field
         % otherwise use Axoprobe defaults
-        AmpStatus.Data = mc700btelegraph();
-        if(isempty(AmpStatus.Data)) % unable to make a connection...
+        Data = mc700btelegraph();
+        if(isempty(Data)) % unable to make a connection...
             return;
         end;
+        AmpStatus = [];
+        AmpStatus.Data = [];
+        AmpStatus.Data = Data;
         if (isstruct(AmpStatus.Data) && ~isempty(AmpStatus.Data))
             for i = 1:length(AmpStatus.Data)
                 % amplifier mode

@@ -9,16 +9,13 @@ function mc700bswitch(InputSelect, mode)
 % either a single mode for all amplifiers, or different modes for each
 % ampilfier. 
 
-timeout = 2;
-con = tcpip('127.0.0.1', 34567); % connect to the server
-if(con == 0)
-    fprintf(1, 'Cannot Connect to Multiclamp FTP Server\n');
+[conn, err]  = MC700('open');
+if(err)
     return;
 end;
-%fprintf(con,'setreadtimeout',2.0)
-fopen(con);
-fprintf(con,  'getNumDevices()');
-ndev = fscanf(con);
+
+fprintf(conn,  'getNumDevices()');
+ndev = getMC700(conn);
 devicelist = eval(sprintf('[%s]', ndev)); % evaluate the device list
 
 newmode = cell(size(InputSelect));
@@ -38,7 +35,7 @@ end;
 for i = 1:length(InputSelect)
     thisdevice = InputSelect(i);
     if(iscell(newmode))
-        thismode = char(newmode{i})
+        thismode = char(newmode{i});
     else
         thismode = newmode(i);
     end;
@@ -47,22 +44,23 @@ for i = 1:length(InputSelect)
         ndev = thisdevice - 1;
         switch(thismode)
             case {'V', 'VC', 'V-Clamp'}
-                fprintf(con, 'setMode(%d,VC)\n', ndev);
+                fprintf(conn, 'setMode(%d,VC)', ndev);
             case '0'
-                fprintf(con, 'setMode(%d,I=0)\n', ndev);
+                fprintf(conn, 'setMode(%d,I=0)', ndev);
             case {'I', 'IC', 'I-Clamp'}
-                fprintf(con, 'setMode(%d,IC)\n', ndev);
+                fprintf(conn, 'setMode(%d,IC)', ndev);
             otherwise
                 fprintf(1, 'Mode not recognized: %s\n', thismode);
         end;
-        fprintf(con, 'getMode(%d)\n', ndev); % read the mode
-        thenewmode = fscanf(con);
+        fprintf(conn, 'getMode(%d)\n', ndev); % read the mode
+
+    thenewmode = getMC700(conn);
 
     else
         fprintf(1, 'Device %d not in list\n', thisdevice);
     end;
 end;
 
-fclose(con);
-delete(con);
-clear con
+MC700('close');
+
+
