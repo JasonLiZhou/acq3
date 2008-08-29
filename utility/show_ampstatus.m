@@ -26,9 +26,12 @@ if(isstruct(AmpStatus.Data))
 else
     ext = 0;
 end;
-ampstat = sprintf('M: %1c G: %5.1f F: %5.1f Ig: %5.0f', ...
-    AmpStatus.Mode, AmpStatus.Gain, AmpStatus.LPF, ext);
 hamp=findobj('Tag', 'AmpStatus');
+
+if(length(AmpStatus.Data) <= 1)
+    ampstat = sprintf('M: %1c G: %5.1f F: %5.1f Ig: %5.0f', ...
+    AmpStatus.Mode, AmpStatus.Gain, AmpStatus.LPF, ext);
+end;
 
 if(length(AmpStatus.Data) > 1)
     ampstat = cell(length(AmpStatus.Data), 1);

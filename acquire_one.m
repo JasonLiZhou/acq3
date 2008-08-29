@@ -77,6 +77,7 @@ global ACQ_FILENAME HFILE FILE_STATUS FILEFORMAT
 global AI AO DIO
 global SCOPE_FLAG STOP_ACQ ONLINE IN_MACRO IN_ACQ
 global HOLD_FLAG HOLD_CURRENT HOLD_VOLTAGE FPOINTS
+global AmpStatus
 
 retval = 0;
 STOP_ACQ = 0;
@@ -814,6 +815,7 @@ end;
 if(isvalid(AI))
     %    bufsize = round(duration*samp_rate*2/nchan);
     stop(AI);
+    set(AI, 'ChannelSkewMode', 'Minimum');
     delete(AI.Channel);
     % get acquisition configuration - interaction between hardware
     % and the DFILE acquisition settings
@@ -865,11 +867,10 @@ if(isvalid(AI))
     set(AI, 'SamplesPerTrigger', nsamp);
     set(AI, 'BufferingMode', 'Manual');
     set(AI, 'BufferingConfig', [bufsize,3]); % needed to allow long buffers.
-    % set up the skew for a close-to-minimum amount. This makes the sampling
+    % set up the skew for the minimum amount. This makes the sampling
     % nearly simultaneous for each group of channels.%
-        set(AI, 'ChannelSkewMode', 'Manual');
-        set(AI, 'ChannelSkew', 5e-6); % that's 5 usec per channel...
-
+    set(AI, 'ChannelSkewMode', 'Minimum'); % keep samples close in time.
+    skew = get(AI, 'Channelskew');
     set(AI, 'TransferMode', 'SingleDMA');
     set(AI, 'RuntimeErrorFcn', 'acq_timeout');
     set(AI, 'Timeout', 5);
