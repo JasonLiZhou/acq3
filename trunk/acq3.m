@@ -76,7 +76,7 @@ global DFILE DATA STIM STIM2 CONFIG BASEPATH
 global ACQ_DEVICE TEST_MODEL  % control variables
 global DEVICE_ID HARDWARE %#ok<NUSED>
 global ONLINE ONLINE_DATA
-global MCList
+global MCList AmpStatus
 global MC700BConnection
 global ACQVERSION ACQVERDATE
 
@@ -194,7 +194,7 @@ global STOP_ACQ SCOPE_FLAG IN_ACQ SCOPE_RESTART STOPPED_FLAG % flags
 global IN_MACRO STOP_MACRO
 global WIN_TITLE DISPLIM CHLIM ONLINE
 global HOLD_FLAG HOLD_CURRENT
-
+global AmpStatus
 
 if(nargout > 0)
     varargout{1} = 0;
@@ -313,14 +313,14 @@ end;
 if (~isempty(notice))
     fprintf(2, 'acq3: %s\n', notice);
 end
-
-err = show_ampstatus;
-if(err)
-    if(nargout > 0)
-        varargout{1} = 1;
-    end;
-    return;
-end;
+AmpStatus = telegraph;
+% err = show_ampstatus;
+% if(err)
+%     if(nargout > 0)
+%         varargout{1} = 1;
+%     end;
+%     return;
+% end;
 command_gather([BASEPATH 'source']); % get the commands from the source directory beneath us
 if(isempty(CMDS))
     close(h); % close the window.
