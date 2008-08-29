@@ -1,8 +1,8 @@
 function quick(arg)
 
-global MCList HARDWARE
+global MCList HARDWARE AmpStatus
 
-AmpStatus = telegraph;
+AmpStatus = telegraph; %  read the amplifier status first 
 dual = 0;
 if (arg > 3)
     dual = 1;

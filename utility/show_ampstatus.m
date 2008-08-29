@@ -3,6 +3,7 @@ function [varargout] = show_ampstatus()
 % show the amplifier status in the display area.
 %
 global DEVICE_ID
+global AmpStatus
 
 if(nargout > 0)
     varargout{1} = 0;
@@ -11,7 +12,7 @@ end;
 if(DEVICE_ID < 0)
     return;
 end;
-AmpStatus = telegraph;
+%AmpStatus = telegraph;
 if(isempty(AmpStatus) || isempty(AmpStatus.Data))
     if(nargout > 0)
         varargout{1} = 1;

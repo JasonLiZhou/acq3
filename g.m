@@ -21,6 +21,8 @@ function varargout = g(sfilename)
 % 3/18/08 cleaned up
 % pmanis
 global STIM DFILE CONFIG ONLINE IN_ACQ DISPCTL DEVICE_ID
+global AmpStatus
+
 debugme = 0;
 
 QueMessage(' ', 1);
@@ -100,7 +102,7 @@ end;
 % Otherwise, we should kick it back to the safe file.
 %
 if(~isempty(df) && DEVICE_ID ~= -1)
-    [AmpStatus, amp_err] = compare_modes(df.Data_Mode.v); % check against the putative move
+    [ampmode, amp_err] = compare_modes(df.Data_Mode.v); % check against the putative move
     if(amp_err)
         return;
     end;

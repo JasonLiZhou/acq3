@@ -163,24 +163,18 @@ else
             %disp 'connect... amp'
             switch(lower(CONFIG.Amplifier.v)) % make connection to computer-controlled amplifier
                 case MCList
-                    if(MC700BConnection > 0)
+                    [conn, err]  = MC700('open');
+                    if(~err)
+                        MC700('close');
                         return;
                     end;
-                    timeout = 2; %#ok<NASGU>
-                    MC700BConnection = tcpip('127.0.0.1', 34567);
-                    try
-                        fopen(MC700BConnection);
-                    catch
-                        fprintf(2, 'ACQ3 ERROR: Could not connect to TCP server\n');
-                        if(nargout > 0)
-                            varargout{1} = 1;
-                        end;
-                        return;
+                    fprintf(2, 'ACQ3 ERROR: Could not connect to TCP server\n');
+                    if(nargout > 0)
+                        varargout{1} = 1;
                     end;
-                    %fprintf(1, 'MC700 Connected on %d \n', MC700BConnection);
-                    fprintf(1, 'MC700 %d Connected \n', MC700BConnection.serialnum(1));
-                    fclose(MC700BConnection);
-                    MC700BConnection = [];
+                    return;
+
+
                 otherwise
             end;
 

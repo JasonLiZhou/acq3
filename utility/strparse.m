@@ -1,5 +1,8 @@
 function [res, err] = strparse(inpstring)
 err = 0;
+if(~ischar(inpstring))
+    inpstring = char(inpstring);
+end;
 [serr, arglist] = strtok(inpstring, ',');
 if(str2double(serr) ~= 1)
     err = 1;

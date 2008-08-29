@@ -267,7 +267,7 @@ if(~isempty(STIM.AcqFile.v) && ~strcmpi(deblank(DFILE.Filename.v), deblank(acqfi
 end;
 
 if(DEVICE_ID >= 0) % check the amplifier status and see if it matches the acquisition file
-    [AmpStatus, amp_err] = compare_modes(DFILE.Data_Mode.v); %#ok<NASGU> % returns 1 if in error
+    [AmpMode, amp_err] = compare_modes(DFILE.Data_Mode.v); %#ok<NASGU> % returns 1 if in error
     if(amp_err)
         return;
     end;
