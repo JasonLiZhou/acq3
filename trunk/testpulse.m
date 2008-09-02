@@ -119,9 +119,9 @@ if(~isempty(du))
     base_dur(parn(du)) = max(vlist{parn(du)});
 end;
 
-if(any(base_dur < nrate/1000))
+if(any(base_dur < 2*nrate/1000))
     k = find(base_dur > 0);
-    nrate = min(base_dur(k))*1000;
+    nrate = min(base_dur(k))*1000/2;
 end;
 
 % if we are sequencing IPIs, the get information
@@ -182,9 +182,9 @@ else
     tot_dur2 = tot_dur2 + test_dur+1; % always add 1 msec to end of the thing.
 end;
 
-if(tot_dur2 > tot_dur)
-    tot_dur = tot_dur2;
-end;
+
+tot_dur = tot_dur2 + tot_dur +1;
+
 if(isempty(nrate) || nrate < 1)
     nrate = sfile.Sample_Rate.v;
 end;
@@ -211,9 +211,9 @@ end;
 
 for n = 1 : length(pulse_begin) % for each pulse in the train
     k = floor(pulse_begin(n)/(nrate/1000))+1; % get the index of start of pulse
-    for i=1:ns % each pulse consists of a series of steps, so create steps
+    for i=1:1 % each pulse consists of a series of steps, so create steps
         j = 0;
-        j = floor(sfile.Duration.v(i)/(nrate/1000))-1; % Number of points in the duration step dur in msec; convert rate to msec too
+        j = floor(sfile.Duration.v(i)/(nrate/1000)); % Number of points in the duration step dur in msec; convert rate to msec too
         if(relflag && i > 1) % check relative
             outdata{1}.vsco(k:k+j) = sfile.Level.v(1)*sfile.Level.v(i); % value is constant for that time
         else
@@ -233,6 +233,7 @@ k = floor(pulse_begin/(nrate/1000)); % get the index of start of pulse
 j = floor(test_dur(1)/(nrate/1000))-1;
 
 outdata{1}.vsco(k:k+j) = sfile.TestLevel.v(1);
+nps1 = length(sfile.Duration.v);
 
 outdata{1}.vsco = outdata{1}.vsco*sfile.Scale.v + sfile.Holding.v; % scale and offset the data
 tbase{1}.vsco=nrate*(0:length(outdata{1}.vsco)-1)/1000; % time base, in msec for the output
@@ -251,7 +252,7 @@ for m = 1:nout % for each element of the sequence
     for n = 1 : length(pulse_begin) % for each pulse in the train
         k = floor(pulse_begin(n)/(nrate/1000))+1; % get the index of start of pulse
         
-        for i=1:ns % each pulse consists of a series of steps, so create steps
+        for i=1:nps1 % each pulse consists of a series of steps, so create steps
             j = 0;
             if(isempty(du))% ? no changes in duration
                 j = floor(sfile.Duration.v(i)/(nrate/1000))-1; % Number of points in the duration step dur in msec; convert rate to msec too
