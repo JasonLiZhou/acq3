@@ -30,7 +30,10 @@ if(nargin == 0) % no input data?
     title    = sprintf('%s Note', HFILE.filename);
     lines = 1;
     def     = {''};
-    answer   = inputdlg(prompt,title,lines,def);
+options.Resize='on';
+options.WindowStyle='normal';
+options.Interpreter='tex';
+    answer   = inputdlg(prompt,title,lines,def, options);
     if(isempty(answer)) % we canceled out of the dialog...
         QueMessage('Cancel: Note Not Entered...', 1);
         return;
