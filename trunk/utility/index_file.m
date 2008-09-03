@@ -35,13 +35,14 @@ global DFILE STIM FILE_STATUS %#ok<NUSED>
 % in any case, the first action is to open the existing index file
 % if there is none, we will create a new one
 
-fid = fopen('INDEX.mat', 'r'); % open for reading?
+IndexFile = 'c:\acq3\INDEX.mat';
+fid = fopen(IndexFile, 'r'); % open for reading?
 if(fid < 0)
     %  fprintf(2, 'index_file: Creating new index\n');
     INDEX = [];
 else
     fclose(fid);
-    load('INDEX');
+    load(IndexFile);
 end;
 
 t = now; % get serial date/time number
@@ -66,9 +67,9 @@ switch(op)
         INDEX(s).type2 = id;
         INDEX(s).MatName = id2; %#ok<NASGU>
         if(~isempty(FILEFORMAT))
-            save('INDEX', 'INDEX', '-append', FILEFORMAT); % build data file
+            save(IndexFile, 'INDEX', '-append', FILEFORMAT); % build data file
         else
-            save('INDEX', 'INDEX', '-append'); % build data file
+            save(IndexFile, 'INDEX', '-append'); % build data file
         end;        
         
     case 'close'
@@ -78,9 +79,9 @@ switch(op)
         end;
         filename = fullfile(ACQ_PATH, ACQ_FILENAME);
         filename = [filename '.mat'];
-        x = exist(['INDEX' '.mat'], 'file');
+        x = exist(IndexFile, 'file');
         if(any(x ==2))
-            Index = load('INDEX');
+            Index = load(IndexFile);
             Index = Index.INDEX; %#ok<NASGU>
             if(~exist(filename, 'file'))
                 return;
@@ -90,7 +91,7 @@ switch(op)
             else
                 save(filename, 'Index', '-append'); % build data file
             end;
-            delete ('INDEX.mat'); % remove existing index file
+            delete (IndexFile); % remove existing index file
         else
             QueMessage('index_file: INDEX is missing at close', 1);
         end;
@@ -116,9 +117,9 @@ switch(op)
         end;
         INDEX(s).MatName = ent; %#ok<NASGU>
         if(~isempty(FILEFORMAT))
-            save('INDEX', 'INDEX', FILEFORMAT); % build data file
+            save(IndexFile, 'INDEX', FILEFORMAT); % build data file
         else
-            save('INDEX', 'INDEX'); % build data file
+            save(IndexFile, 'INDEX'); % build data file
         end;   % blithley overwrite existing index file
     otherwise
 end;
