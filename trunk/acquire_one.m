@@ -815,7 +815,7 @@ end;
 if(isvalid(AI))
     %    bufsize = round(duration*samp_rate*2/nchan);
     stop(AI);
-    set(AI, 'ChannelSkewMode', 'Minimum');
+    % set(AI, 'ChannelSkewMode', 'Minimum');
     delete(AI.Channel);
     % get acquisition configuration - interaction between hardware
     % and the DFILE acquisition settings

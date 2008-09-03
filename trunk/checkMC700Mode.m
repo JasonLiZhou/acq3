@@ -14,7 +14,7 @@ if(err)
 end;
 
 fprintf(conn, 'getNumDevices()')
-    ndev = getMC700(conn);
+    ndev = getMC700(conn); % use slow input mode...
 %u = find(ndev == 0);
 %ndev(u) = ' '; % clean null strings.
 
