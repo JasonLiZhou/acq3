@@ -26,9 +26,9 @@ end;
 filename = fullfile(HFILE.path, [HFILE.filename HFILE.ext]);
 
 if(nargin == 0) % no input data?
-    prompt   = {'Note:'};
-    title    = sprintf('%s Note', HFILE.filename);
-    lines = 1;
+    prompt   = sprintf('Note for %s:', HFILE.filename);
+    title    = 'Note';
+    lines = 5;
     def     = {''};
 options.Resize='on';
 options.WindowStyle='normal';

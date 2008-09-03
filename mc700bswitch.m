@@ -15,7 +15,7 @@ if(err)
 end;
 
 fprintf(conn,  'getNumDevices()');
-ndev = getMC700(conn);
+ndev = getMC700(conn, 1);
 devicelist = eval(sprintf('[%s]', ndev)); % evaluate the device list
 
 newmode = cell(size(InputSelect));
@@ -44,11 +44,11 @@ for i = 1:length(InputSelect)
         ndev = thisdevice - 1;
         switch(thismode)
             case {'V', 'VC', 'V-Clamp'}
-                fprintf(conn, 'setMode(%d,VC)', ndev);
+                fprintf(conn, 'setMode(%d,VC)\n', ndev);
             case '0'
-                fprintf(conn, 'setMode(%d,I=0)', ndev);
+                fprintf(conn, 'setMode(%d,I=0)\n', ndev);
             case {'I', 'IC', 'I-Clamp'}
-                fprintf(conn, 'setMode(%d,IC)', ndev);
+                fprintf(conn, 'setMode(%d,IC)\n', ndev);
             otherwise
                 fprintf(1, 'Mode not recognized: %s\n', thismode);
         end;

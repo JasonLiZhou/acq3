@@ -2,10 +2,14 @@ function [con, err] = MC700(arg)
 
 % open or close the MC700B amplifier connection
 % and return a flag to indicate if ok...
-global MC700BConnection
+%global MC700BConnection
 
 err = 0;
 con = [];
+persistent MC700BConnection
+if(~exist('MC700BConnection', 'var'))
+    MC700BConnection = [];
+end;
 
 switch (arg)
     case 'open'
@@ -30,7 +34,7 @@ switch (arg)
 
 
     case 'close'
-        if(~isempty(MC700BConnection))
+        if(exist('MC700BConnection', 'var') && ~isempty(MC700BConnection))
             fclose(MC700BConnection);
         MC700BConnection = [];
         end;
