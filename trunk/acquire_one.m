@@ -61,6 +61,9 @@ end;
 
 
 while(get_one(flag, ntake) == 1) % the return value depends on the SCOPE_FLAG -
+    if(STOP_ACQ == 1)
+        break;
+    end;
 end;
 return;
 
@@ -460,7 +463,7 @@ if(DEVICE_ID == -1) % just fake data
                     pause(0.01);
                 end; % wait for the end of the cycle
                 if(STOP_ACQ)
-                    retval = SCOPE_FLAG;
+                    retval =  0; % SCOPE_FLAG;
                     if(~isempty(filename))
                         gather(filename, tmp_file, filewrite, local_sf);
                         clean_up(tmp_file);
@@ -476,7 +479,7 @@ if(DEVICE_ID == -1) % just fake data
     end;
     QueMessage('Model Acquisition Complete', 1);
     acq_stop;
-    retval = SCOPE_FLAG;
+    retval = 0; % SCOPE_FLAG;
     return;
 end;
 
@@ -549,7 +552,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                 [tmode, amp_err] = compare_modes(DFILE.Data_Mode.v);
                 if(amp_err)
                     clean_up(tmp_file);
-                    retval = SCOPE_FLAG;
+                    retval = 0; % SCOPE_FLAG;
                     QueMessage('Acquire_one: Stopping, unable to read amp status');
                     return; % whoops....
                 end;
@@ -620,11 +623,11 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
             end;
             % it is critical to test STOP_ACQ here - otherwise async call to acq_stop or bye can
             % kill the AI while we are "running", causing an error. 
-            while(~STOP_ACQ && (get(AI, 'SamplesAvailable') < nsamp)) % && (toc  < cycle*1.2))
+            while(~STOP_ACQ && isvalid(AI) && (get(AI, 'SamplesAvailable') < nsamp)) % && (toc  < cycle*1.2))
                 pause(0.01);
             end;
             if(STOP_ACQ || ~isvalid(AI)) % verify the stop conditions.
-                retval = SCOPE_FLAG;
+                retval = 0; % SCOPE_FLAG;
                 gather(filename, tmp_file, filewrite, local_sf);
                 clean_up(tmp_file);
                 return;
@@ -642,7 +645,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                         otherwise
                             putsample(AO,[0, 0]);
                     end;
-                    retval = SCOPE_FLAG;
+                    retval = 0; %SCOPE_FLAG;
                     gather(filename, tmp_file, filewrite, local_sf);
                     clean_up(tmp_file);
                     return;
@@ -697,7 +700,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
             end;
             pause(0.01);
             if(STOP_ACQ)
-                retval = SCOPE_FLAG;
+                retval = 0; %SCOPE_FLAG;
                 gather(filename, tmp_file, filewrite, local_sf);
                 clean_up(tmp_file);
                 return;
@@ -711,7 +714,7 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
 
             pertime = toc;
             if(STOP_ACQ)
-                retval = SCOPE_FLAG;
+                retval = 0; % SCOPE_FLAG;
                 gather(filename, tmp_file, filewrite, local_sf);
                 clean_up(tmp_file);
                 return;
@@ -722,7 +725,7 @@ end;
 stop(DIO);
 
 QueMessage('Acquisition Complete', 1);
-retval = SCOPE_FLAG;
+retval = 0; % SCOPE_FLAG;
 gather(filename, tmp_file, filewrite, local_sf);
 clean_up(tmp_file);
 return;

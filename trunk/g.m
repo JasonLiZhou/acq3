@@ -101,12 +101,12 @@ end;
 % acquisition mode is in fact correct for the file we just loaded.
 % Otherwise, we should kick it back to the safe file.
 %
-if(~isempty(df) && DEVICE_ID ~= -1)
-    [ampmode, amp_err] = compare_modes(df.Data_Mode.v); % check against the putative move
-    if(amp_err)
-        return;
-    end;
-end;
+% if(~isempty(df) && DEVICE_ID ~= -1)
+%     [ampmode, amp_err] = compare_modes(df.Data_Mode.v); % check against the putative move
+%     if(amp_err)
+%         return;
+%     end;
+% end;
 
 if(nargout == 0) % no output - place it globally and DO things to it
 
@@ -129,7 +129,27 @@ if(nargout == 0) % no output - place it globally and DO things to it
         struct_edit('load', STIM); % THIS ONE... then do the new stim file so its up last
         pv('-p'); % execute a preview with no calculation - just display it.
     end;
-        set_hold;
+    [t, gain, clist] = checkMC700mode(); % read the multiclamp700
+    dmode = DFILE.Data_Mode.v;
+    for i = 1:length(t)
+        if(t(i).mode == 'V')
+            t(i).mode = 'VC';
+        end;
+        if(t(i).mode == 'I')
+            t(i).mode = 'CC';
+        end
+    end;
+    
+    if(~strcmpi(dmode, t(1).mode))
+        mc700bswitch(clist, {'0', '0'}); % go to 0 current mode if we are different
+    end;
+    AmpStatus = telegraph(); % we need to update the gains... 
+    set_hold;
+    % now we can complete the switch - if we need to... 
+    if(~strcmpi(dmode, t(1).mode))
+        mc700bswitch(clist, {dmode, dmode});
+    end;
+    
     if(strmatch('ONLINE', x, 'exact'))
         on_line('init', -1); % make sure we are cleared first....
         ONLINE = onl; % no struct_edit for online analysis - handled by a window....

@@ -1,4 +1,4 @@
-function [t,gain] = checkMC700Mode()
+function [t,gain, clist] = checkMC700Mode()
 
 
 status = [];
@@ -7,6 +7,7 @@ t(1).mode = '';
 t(2).mode = '';
 t(1).gain = 1;
 t(2).gain = 1;
+clist  = [1];
 
 [conn, err]  = MC700('open');
 if(err)
@@ -26,6 +27,7 @@ if(debugflag)
     end;
 end;
 gain = [1,1];
+clist = devlist;
 
 for i = fliplr(devlist) % for each device, get the information
 
@@ -47,7 +49,7 @@ for i = fliplr(devlist) % for each device, get the information
             t(i).mode = 'X';
     end
     if(debugflag)
-        fprintf(1, '\nMode: %s\n', tmode);
+        fprintf(1, '\nMode: %s\n', t.mode);
     end;
     fprintf(conn, 'getPrimarySignalGain(%d)\n', i-1);
 
