@@ -43,11 +43,11 @@ for i = 1:length(InputSelect)
     if(find(thisdevice == devicelist)) % make sure it is in the list...
         ndev = thisdevice - 1;
         switch(thismode)
-            case {'V', 'VC', 'V-Clamp'}
+            case {'V', 'VC', 'V-Clamp', 'VC', 'vc'}
                 fprintf(conn, 'setMode(%d,VC)\n', ndev);
-            case '0'
+            case {'0', 'I=0'}
                 fprintf(conn, 'setMode(%d,I=0)\n', ndev);
-            case {'I', 'IC', 'I-Clamp'}
+            case {'I', 'IC', 'I-Clamp', 'CC', 'cc'}
                 fprintf(conn, 'setMode(%d,IC)\n', ndev);
             otherwise
                 fprintf(1, 'Mode not recognized: %s\n', thismode);

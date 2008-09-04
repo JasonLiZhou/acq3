@@ -276,19 +276,19 @@ switch (amplifier_string)
         % use the new version...
         if(nargin < 2) % just switch to another mode.....
             switch AmpStatus.Mode
-                case 'V'
+                case {'V', 'VV'}
                     QueMessage('Switching Amplifier, VC -> I', 1);
                     mc700bswitch(1, '0');
                     g(CONFIG.CC.v); % load the CC basic configuration file
                     QueMessage('Switching to CC', 1);
                     mc700bswitch(1, 'I');
-                case 'I'
+                case {'I',  'II'}
                     QueMessage('Switching Amplifier I -> VC', 1);
                     mc700bswitch(1, '0');
                     g(CONFIG.VC.v); % load the save vc protocol.
                     QueMessage('Switching to VC', 1);
                     mc700bswitch(1, 'V');
-                case '0'
+                case {'0', '00'}
                     QueMessage('Amplifier in I=0, switching to VC', 1);
                     mc700bswitch(1, '0');
                     g(CONFIG.VC.v); % load the save vc protocol.
@@ -303,9 +303,15 @@ switch (amplifier_string)
             switch targetMode
                 case {'V', 'VC'}
                     QueMessage('Switching Amplifier to VC', 1);
+                    mc700bswitch(InputSelect, '0');
+                    g(CONFIG.VC.v); % load the VC basic configuration file
+                    QueMessage('Switching to VC', 1);
                     mc700bswitch(InputSelect, 'V');
                 case {'I', 'CC'}
                     QueMessage('Switching Amplifier to IC', 1);
+                    mc700bswitch(InputSelect, '0');
+                    g(CONFIG.CC.v); % load the CC basic configuration file
+                    QueMessage('Switching to CC', 1);
                     mc700bswitch(InputSelect, 'I');
                 case '0'
                     QueMessage('Switching Amplifier to I=0', 1);

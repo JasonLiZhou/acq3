@@ -51,6 +51,13 @@ end;
 
 status = struct ('measure', {}, 'gain', {}, 'unit', {}, 'scaled_unit', {});
 for i = fliplr(devlist) % for each device, get the information
+
+        fprintf(conn, 'getDeviceInfo(%d)\n', i-1); % find out what the amplifier type is
+    devtype = getMC700(conn);
+    devlist = strparse(devtype); % 1 will be mc700 a or b, 2 will be SN
+    device{i} =devlist{1};
+    status(i).device = device{i};
+
     fprintf(conn, 'getPrimarySignalInfo(%d)\n', i-1);
     mc700msg = getMC700(conn);
 
@@ -134,32 +141,39 @@ for i = fliplr(devlist) % for each device, get the information
     status(i).lpf = str2double(vargs{1});
     status(i).lpf_unit='Hz';
 
-    fprintf(conn, 'getSecondarySignalGain(%d)\n', i-1);
-    mc700bmsg = getMC700(conn);
-    [vargs, err] = strparse(mc700bmsg);
-    if(str2double(vargs{1}) < 0.001 || err > 0)
-        if(~gain2errorflag)
-            fprintf(1, 'Unable to Secondary Signal Gain on MC700A amplifier: setting to 10\n');
-            gain2errorflag = 1;
-        end;
-        status(i).scaled_gain2 = 10;
-    else
-        status(i).scaled_gain2 = str2double(vargs{1});
+    status(i).scaled_gain2 = 10;
+    status(i).lpf2 = 0; % secondary defaults
+    status(i).lpf_unit2='Hz';
+
+    switch(device{i})
+        case 'MC700B'
+            fprintf(conn, 'getSecondarySignalGain(%d)\n', i-1);
+            mc700bmsg = getMC700(conn);
+            [vargs, err] = strparse(mc700bmsg);
+            if(str2double(vargs{1}) < 0.001 || err > 0)
+                if(~gain2errorflag)
+                    fprintf(1, 'Unable to Secondary Signal Gain on MC700A amplifier: setting to 10\n');
+                    gain2errorflag = 1;
+                end;
+                status(i).scaled_gain2 = 10;
+            else
+                status(i).scaled_gain2 = str2double(vargs{1});
+            end;
+
+            fprintf(conn, 'getSecondarySignalLPF(%d)\n', i-1);
+            mc700bmsg = getMC700(conn);
+            [vargs, err] = strparse(mc700bmsg);
+            if(str2double(vargs{1}) < 0.1 || err > 0)
+                if(~lpf2errorflag)
+                    fprintf(1, 'Unable to get Secondary LPF on MC700A amplifier: setting to 0\n');
+                    lpf2errorflag = 1;
+                end;
+                status(i).lpf2 = 0;
+            else
+                status(i).lpf2 = str2double(vargs{1});
+            end;
     end;
 
-    fprintf(conn, 'getSecondarySignalLPF(%d)\n', i-1);
-    mc700bmsg = getMC700(conn);
-    [vargs, err] = strparse(mc700bmsg);
-    if(str2double(vargs{1}) < 0.1 || err > 0)
-        if(~lpf2errorflag)
-            fprintf(1, 'Unable to get Secondary LPF on MC700A amplifier: setting to 0\n');
-            lpf2errorflag = 1;
-        end;
-        status(i).lpf2 = 0;
-    else
-        status(i).lpf2 = str2double(vargs{1});
-    end;
-    status(i).lpf_unit2='Hz';
 
 end;
 MC700('close');

@@ -72,8 +72,7 @@ switch lower(amplifier_string)
     case MCList % process multiclamp amplifiers a little differently.
         [AmpMode] = checkMC700Mode; % read em and weep.
         for i = [1,2]
-            switch(AmpMode(i).mode)
-
+            switch(AmpMode(i).mode)  % get the mode for this amplifier
                 case '0'
                     QueMessage('Amplifier I = 0', 1);
                     err = 0; % not an error!
