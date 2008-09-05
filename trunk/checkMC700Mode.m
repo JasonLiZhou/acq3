@@ -36,7 +36,6 @@ for i = fliplr(devlist) % for each device, get the information
     [vargs, err] = strparse(mc700msg);
     if(err > 0)
         status(i).mode = 'X';
-        status(i).extcmd = 0;
     end;
     switch (unblank(vargs{1}))
         case {'V-Clamp', 'VC'} % voltage clamp

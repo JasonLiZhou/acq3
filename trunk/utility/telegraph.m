@@ -245,27 +245,33 @@ switch (amplifier_string)
                 % don't bother if zero, external command is off
                 % scaling can be changed in CONFIG_AO if needed
                 output_range = [-10 10];    % DEFAULT AO RANGE
-                if (AmpStatus.Data(i).extcmd > 0)
-                    switch (AmpStatus.Data(1).extcmd_unit)
-                        case 'uV/V'
-                            ext_cmd = AmpStatus.Data(i).extcmd * output_range * (10 ^ -3);
-                        case 'V/V'
-                            ext_cmd = AmpStatus.Data(i).extcmd * output_range * (10 ^ 3);
-                        case 'nA/V'
-                            ext_cmd = AmpStatus.Data(i).extcmd * output_range * (10 ^ 3);
-                        case 'uA/V'
-                            ext_cmd = AmpStatus.Data(i).extcmd * output_range * (10 ^ 6);
-                        otherwise   % includes mV/V and pA/V
-                            ext_cmd = AmpStatus.Data(i).extcmd * output_range;
-                    end
-                    switch (AmpStatus.Mode(i))
-                        case 'V'
+                switch(AmpStatus.Data(i).mode)
+                    case 'V-Clamp'
+                        if (AmpStatus.Data(i).VC_extcmd > 0)
+                            switch (AmpStatus.Data(1).VC_extcmd_unit)
+                                case 'uV/V'
+                                    ext_cmd = AmpStatus.Data(i).VC_extcmd * output_range * (10 ^ -3);
+                                case 'V/V'
+                                    ext_cmd = AmpStatus.Data(i).VC_extcmd * output_range * (10 ^ 3);
+                                otherwise   % includes mV/V
+                                    ext_cmd = AmpStatus.Data(i).VC_extcmd * output_range;
+                            end
+                        end;
+                        AmpStatus.ExtScale(i) = ext_cmd(2);
+                    case 'I-Clamp'
+                        if (AmpStatus.Data(i).CC_extcmd > 0)
+                            switch (AmpStatus.Data(1).CC_extcmd_unit)
+                                case 'nA/V'
+                                    ext_cmd = AmpStatus.Data(i).CC_extcmd * output_range * (10 ^ 3);
+                                case 'uA/V'
+                                    ext_cmd = AmpStatus.Data(i).CC_extcmd * output_range * (10 ^ 6);
+                                otherwise   % includes pA/V
+                                    ext_cmd = AmpStatus.Data(i).CC_extcmd * output_range;
+                            end;
                             AmpStatus.ExtScale(i) = ext_cmd(2);
-                        case {'I', '0'}
-                            AmpStatus.ExtScale(i) = ext_cmd(2);
-                    end
+                        end;
                 end
-            end; % of the fore looop across channels.
+            end; % of the for looop across channels.
         else
             AmpStatus.Mode = 'I';
             AmpStatus.Gain = 10.0;

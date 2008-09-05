@@ -77,44 +77,30 @@ for i = fliplr(devlist) % for each device, get the information
     [vargs, err] = strparse(mc700msg);
     if(err > 0)
         status(i).mode = 'X';
-        status(i).extcmd = 0;
     end;
     tmode = vargs{1};
     if(debugflag)
         fprintf(1, '\nMode: %s\n', tmode);
     end;
 
-    %%%%  Use a DLL to read some other pareameteres....
-    %%%%
-    %    tgchan = mctgclient('start'); % also connect via Scott Molitor's DLL
-    %    flag = mctgclient('select',tgchan(i));
-    %    tg = mctgclient('read'); % and read the telegraph here.
-    %    mctgclient('stop');
-    %%%% end of dll call - all the rest is with tcpip
-    %%%%
-
-    %    status(i).extcmd = tg.extcmd;
-    %    status(i).extcmd_unit = tg.extcmd_unit;
-    %    status(i).mode = tg.mode;
-    %
     % we leave this hard codeed because we cannot read it. You must be sure that
     % you have set the amp to the corerect gain settings to match. At some point
     % I will write something to test this when the program is started.
+    
+    status(i).VC_extcmd = HARDWARE.multiclamp.ExtCmd_VC(i);
+    status(i).VC_extcmd_unit = [HARDWARE.multiclamp.OutputUnitsVC '/V'];
+    status(i).Zero_extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
+    status(i).Zero_extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
+    status(i).CC_extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
+    status(i).CC_extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
 
     switch(unblank(tmode))
         case 'VC'
             status(i).mode = 'V-Clamp';
-            status(i).extcmd = HARDWARE.multiclamp.ExtCmd_VC(i);
-            status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsVC '/V'];
-
         case 'I=0'
             status(i).mode = 'I = 0';
-            status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
-            status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
         case {'IC', 'C'}
             status(i).mode = 'I-Clamp';
-            status(i).extcmd = HARDWARE.multiclamp.ExtCmd_CC(i);
-            status(i).extcmd_unit = [HARDWARE.multiclamp.OutputUnitsCC '/V'];
     end;
     fprintf(conn, 'getPrimarySignalGain(%d)\n', i-1);
     mc700bmsg = getMC700(conn);
