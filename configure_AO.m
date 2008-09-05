@@ -32,10 +32,10 @@ switch(xmode)
             case MCList
                 mcdebugprintf(mc_debug, 'acquire_one: using multiclamp amplifier\n');
                 c=AmpStatus.Data(1);
-                if(strcmp(c.extcmd_unit, 'mV/V') && c.extcmd == 20)
+                if(strcmp(c.VC_extcmd_unit, 'mV/V') && c.VC_extcmd == 20)
                     set(ao_chans(1), 'UnitsRange', symrange(HARDWARE.multiclamp.OutputUnitsRangeVC(1))); % % for voltage clamp: 10 v command yields 200 mV (e.g. 20 mV/V).
                     mcdebugprintf(mc_debug, 'acquire_one: multiclamp Outputunitsrange 200 mV/V');
-                elseif(strcmp(c.extcmd_unit, 'mV/V') && c.extcmd == 100) % here 10 V command yields 1V.
+                elseif(strcmp(c.VC_extcmd_unit, 'mV/V') && c.VC_extcmd == 100) % here 10 V command yields 1V.
                     set(ao_chans(1), 'UnitsRange', symrange(HARDWARE.multiclamp.OutputUnitsRangeVC(2)));
                     mcdebugprintf(mc_debug, 'acquire_one: multiclamp Outputunitsrange 1000 mV/V');
                 else
@@ -65,11 +65,11 @@ switch(xmode)
                 mcdebugprintf(mc_debug, 'axoprobe mode, CC');
             case MCList % note that channel order on input needs to be swapped.
                 c=AmpStatus.Data(1);
-                if(strcmp(c.extcmd_unit, 'pA/V') && c.extcmd == 400)
+                if(strcmp(c.CC_extcmd_unit, 'pA/V') && c.CC_extcmd == 400)
                     set(ao_chans(1), 'UnitsRange', symrange(HARDWARE.multiclamp.OutputUnitsRangeCC(1)/5)); % for current clamp: this yields values in pA.
                     set(ao_chans(1), 'Units', HARDWARE.multiclamp.OutputUnitsCC); % for current clamp: this yields values in pA.
                     mcdebugprintf(mc_debug, ' multiclamp, Set CC for 400 pA/V');
-                elseif(strcmp(c.extcmd_unit, 'nA/V') && c.extcmd == 2)
+                elseif(strcmp(c.CC_extcmd_unit, 'nA/V') && c.CC_extcmd == 2)
                     set(ao_chans(1), 'UnitsRange', symrange(HARDWARE.multiclamp.OutputUnitsRangeCC(1)));
                     set(ao_chans(1), 'Units', HARDWARE.multiclamp.OutputUnitsCC); % for current clamp: this yields values in pA.
                     mcdebugprintf(mc_debug, ' multiclamp, Set CC for 2 nA/V');

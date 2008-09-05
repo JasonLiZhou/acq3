@@ -38,7 +38,6 @@ end;
 switch(lower(arg))
     case 'off' % turn scope mode off (absolute)
         SCOPE_FLAG = 0; % set scope flag OFF, and then
-%        acq_stop; % force a stop
         if(~isempty(h))
             set(h, 'BackgroundColor', [0 1 0]); % green means we can go to scope
             set(h, 'ForegroundColor', [1 1 1]);
@@ -53,7 +52,7 @@ switch(lower(arg))
             set(h, 'BackgroundColor', [1 0 0]); % read means we are in scope and next press will stop us
             set(h, 'ForegroundColor', [1 1 1]);
         end;
-        acquire_one('data');
+        acquire_one('data'); % start the acquisition
         return;
     case 'pause'
         SCOPE_FLAG = 2;
