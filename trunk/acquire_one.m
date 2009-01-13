@@ -627,6 +627,17 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                 pause(0.01);
             end;
             if(STOP_ACQ || ~isvalid(AI)) % verify the stop conditions.
+                stop([AI AO]);
+%                fprintf(1, 'Stop requested, invalid AI, mode = %s\n', xmode);
+                switch xmode
+                    case 'CC'
+                        putsample(AO,[HOLD_CURRENT, 0]); % reset the output levels.
+                    case 'VC'
+                        putsample(AO,[h1, 0]);
+                    otherwise
+                        putsample(AO,[0, 0]);
+                end;
+
                 retval = 0; % SCOPE_FLAG;
                 gather(filename, tmp_file, filewrite, local_sf);
                 clean_up(tmp_file);
@@ -634,9 +645,11 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
             end
             if(isvalid(AI) && (get(AI, 'SamplesAvailable') > 0))
                 if(~STOP_ACQ)
+%                    fprintf(1, 'Getting data, no STOP\n');
                     [data, time] = getdata(AI); %#ok<NASGU>
                 else % handle condition where stop was requested  and # samples may be "short" of request
                     stop([AI AO]);
+                    fprintf(1, 'Stop requested, samples > 0, AI valid, mode = %s\n', xmode);
                     switch xmode
                         case 'CC'
                             putsample(AO,[HOLD_CURRENT, 0]); % reset the output levels.
@@ -650,12 +663,15 @@ for BigRepeat = 1:local_sf.Stim_Repeat.v % overall repetition..
                     clean_up(tmp_file);
                     return;
                 end
+            else
+%                fprintf(1, 'Isvalid AI and samples avail > 0'\n');
             end;
+            
             stop([AI AO]);
             %
             % END OF CORE ACQUISITION CODE
             %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+            beep;
             rt = AI.InitialTriggerTime; % get the trigger time...
             rms1 = std(data(:,1)); % get rms value of top trace
             rms2 = std(data(:,2));
