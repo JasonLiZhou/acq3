@@ -1,0 +1,1 @@
+Matlab-baseed data acquisition suite for electrophysiology. Uses Matlab 7.6 and Data Acquisition Toolbox.
